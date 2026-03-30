@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
-import { authService } from "@/lib/auth"
+import { authService, getClientApiBaseUrl } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -59,6 +59,16 @@ function NotionCallbackContent() {
         if (processing === 'true' && userId) {
           if (!isMounted) return
           setStatus('processing')
+
+          let apiBaseUrl: string
+          try {
+            apiBaseUrl = getClientApiBaseUrl()
+          } catch (baseUrlError) {
+            if (!isMounted) return
+            setStatus('error')
+            setError(baseUrlError instanceof Error ? baseUrlError.message : 'Missing API configuration')
+            return
+          }
           
           // Store auth token if provided
           if (token) {
@@ -69,7 +79,7 @@ function NotionCallbackContent() {
           // Poll for workspace setup completion using public endpoint
           pollIntervalRef.current = setInterval(async () => {
             try {
-              const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/workspace-status/${userId}`)
+              const response = await fetch(`${apiBaseUrl}/api/workspace-status/${userId}`)
               const data = await response.json()
               
               if (data.success && data.workspaceReady) {

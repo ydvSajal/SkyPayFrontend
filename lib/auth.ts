@@ -27,18 +27,40 @@ export interface NotionOAuthResponse {
 }
 
 const LOCAL_API_BASE_URL = 'http://localhost:3001'
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || LOCAL_API_BASE_URL
+const CONFIGURED_API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.trim() || ''
+
+function normalizeBaseUrl(url: string) {
+  return url.endsWith('/') ? url.slice(0, -1) : url
+}
+
+export function getClientApiBaseUrl() {
+  if (CONFIGURED_API_BASE_URL) {
+    return normalizeBaseUrl(CONFIGURED_API_BASE_URL)
+  }
+
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname
+    const isLocalHost = host === 'localhost' || host === '127.0.0.1'
+    if (isLocalHost) {
+      return LOCAL_API_BASE_URL
+    }
+
+    throw new Error('NEXT_PUBLIC_API_URL is required in production.')
+  }
+
+  return LOCAL_API_BASE_URL
+}
 
 class AuthService {
   private token: string | null = null
   private initialized = false
   private readonly inFlightGetRequests = new Map<string, Promise<unknown>>()
 
-  private shouldUseLocalFallback() {
+  private shouldUseLocalFallback(primaryBaseUrl: string) {
     if (typeof window === 'undefined') return false
     const host = window.location.hostname
     const isLocalHost = host === 'localhost' || host === '127.0.0.1'
-    return isLocalHost && API_BASE_URL !== LOCAL_API_BASE_URL
+    return isLocalHost && primaryBaseUrl !== LOCAL_API_BASE_URL
   }
 
   constructor() {
@@ -111,8 +133,10 @@ class AuthService {
   ): Promise<T> {
     // Initialize token if not already done
     this.initializeToken()
+
+    const baseUrl = getClientApiBaseUrl()
     
-    const url = `${API_BASE_URL}${endpoint}`
+    const url = `${baseUrl}${endpoint}`
     
     const config: RequestInit = {
       headers: {
@@ -140,7 +164,7 @@ class AuthService {
         try {
           response = await fetch(url, config)
         } catch (error) {
-          if (!this.shouldUseLocalFallback()) {
+          if (!this.shouldUseLocalFallback(baseUrl)) {
             throw error
           }
 

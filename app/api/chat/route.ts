@@ -1,9 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+function resolveServerApiBaseUrl() {
+  const configuredBaseUrl = process.env.API_URL?.trim() || process.env.NEXT_PUBLIC_API_URL?.trim()
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.endsWith('/') ? configuredBaseUrl.slice(0, -1) : configuredBaseUrl
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    return 'http://localhost:3001'
+  }
+
+  return null
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const apiBaseUrl = resolveServerApiBaseUrl()
+    if (!apiBaseUrl) {
+      return NextResponse.json(
+        { error: 'API_URL or NEXT_PUBLIC_API_URL is not configured on the server.' },
+        { status: 500 }
+      )
+    }
+
     const { messages } = await req.json()
     
     // Get the authorization header from the request
@@ -27,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Proxy the request to the backend
-    const response = await fetch(`${API_BASE_URL}/api/agent/process`, {
+    const response = await fetch(`${apiBaseUrl}/api/agent/process`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,9 +60,14 @@ export async function POST(req: NextRequest) {
     })
 
     if (!response.ok) {
-      const errorData = await response.json()
+      let errorData: { error?: string } | null = null
+      try {
+        errorData = await response.json()
+      } catch {
+        errorData = null
+      }
       return NextResponse.json(
-        { error: errorData.error || 'Backend request failed' },
+        { error: errorData?.error || 'Backend request failed' },
         { status: response.status }
       )
     }
