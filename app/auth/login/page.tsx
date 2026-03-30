@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
@@ -21,7 +21,7 @@ import {
   EyeOff,
 } from "lucide-react"
 
-export default function AuthPage() {
+function AuthPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { login, register, isAuthenticated, user } = useAuth()
@@ -503,4 +503,25 @@ export default function AuthPage() {
   }
 
   return null
+}
+
+function AuthPageFallback() {
+  return (
+    <div className="relative min-h-screen bg-[radial-gradient(circle_at_10%_0%,#ffe9d5_0%,#f7f9ff_45%,#eef4ff_100%)] px-4 py-24 sm:px-6 sm:py-8 lg:px-12 lg:py-10 flex items-center justify-center">
+      <Card className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white/85 shadow-2xl backdrop-blur">
+        <CardContent className="p-8 text-center">
+          <Loader2 className="mx-auto h-6 w-6 animate-spin text-slate-700" />
+          <p className="mt-4 text-sm text-slate-600">Loading authentication...</p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<AuthPageFallback />}>
+      <AuthPageContent />
+    </Suspense>
+  )
 }

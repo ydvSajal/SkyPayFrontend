@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { authService } from "@/lib/auth"
@@ -15,7 +15,7 @@ import {
   ArrowRight
 } from "lucide-react"
 
-export default function NotionCallbackPage() {
+function NotionCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { refreshUser } = useAuth()
@@ -256,4 +256,30 @@ export default function NotionCallbackPage() {
   }
 
   return null
-} 
+}
+
+function CallbackFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6">
+          <div className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center">
+              <RefreshCw className="h-8 w-8 text-white animate-spin" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Loading callback...</h2>
+            <p className="text-gray-600">Please wait while we restore your session.</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function NotionCallbackPage() {
+  return (
+    <Suspense fallback={<CallbackFallback />}>
+      <NotionCallbackContent />
+    </Suspense>
+  )
+}
