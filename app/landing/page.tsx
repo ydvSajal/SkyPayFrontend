@@ -17,6 +17,8 @@ import {
   Bell,
   Sparkles,
   LayoutDashboard,
+  Menu,
+  X,
 } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
@@ -25,6 +27,7 @@ export default function LandingPage() {
   const [email, setEmail] = useState("")
   const { isAuthenticated, user, isLoading } = useAuth()
   const [footerVisible, setFooterVisible] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const footerRef = useRef<HTMLElement>(null)
 
   // Scroll-triggered reveal animations
@@ -44,6 +47,19 @@ export default function LandingPage() {
     els.forEach((el) => io.observe(el))
     return () => io.disconnect()
   }, [])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false)
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [mobileMenuOpen])
 
   // Footer glow observer
   useEffect(() => {
@@ -172,18 +188,18 @@ export default function LandingPage() {
                     <Link href="/auth/login" className="landing-getstarted-btn" style={{
                       display: "inline-flex", alignItems: "center",
                       padding: "8px 18px", borderRadius: "100px",
-                      background: "#0f0f0f", color: "#fff",
+                      background: "linear-gradient(140deg, #2f2118 0%, #1f1611 100%)", color: "#fdf7ef",
                       textDecoration: "none", fontSize: "12.5px", fontWeight: "600",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                      boxShadow: "0 4px 12px rgba(31,22,17,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
                       transition: "transform 0.15s, box-shadow 0.15s",
                     }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLElement).style.transform = "scale(1.03)";
-                        (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.2)";
+                        (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 18px rgba(31,22,17,0.36), inset 0 1px 0 rgba(255,255,255,0.1)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-                        (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                        (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(31,22,17,0.28), inset 0 1px 0 rgba(255,255,255,0.08)";
                       }}
                     >
                       Get Started
@@ -192,8 +208,162 @@ export default function LandingPage() {
                 )}
               </>
             )}
+            <button
+              type="button"
+              className="landing-mobile-menu-toggle"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="landing-mobile-menu"
+              style={{
+                width: "34px",
+                height: "34px",
+                borderRadius: "10px",
+                border: mobileMenuOpen ? "1px solid rgba(49,35,26,0.28)" : "1px solid rgba(49,35,26,0.15)",
+                background: mobileMenuOpen
+                  ? "linear-gradient(140deg, rgba(255,255,255,0.88) 0%, rgba(245,232,220,0.92) 100%)"
+                  : "rgba(252,245,237,0.82)",
+                color: "#2f2118",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
           </div>
         </nav>
+
+        {mobileMenuOpen && (
+          <div
+            id="landing-mobile-menu"
+            className="landing-mobile-menu-panel"
+            role="menu"
+            aria-label="Mobile navigation"
+            style={{
+              marginTop: "6px",
+              marginLeft: "0",
+              borderRadius: "14px",
+              border: "1px solid rgba(255,255,255,0.3)",
+              background: "linear-gradient(155deg, rgba(255,255,255,0.46) 0%, rgba(250,239,228,0.38) 46%, rgba(240,228,216,0.34) 100%)",
+              backdropFilter: "blur(16px) saturate(180%)",
+              WebkitBackdropFilter: "blur(16px) saturate(180%)",
+              boxShadow: "0 12px 30px rgba(62,38,22,0.14), inset 0 1px 0 rgba(255,255,255,0.52)",
+              padding: "10px",
+              width: "100%",
+              maxWidth: "none",
+              boxSizing: "border-box",
+              overflow: "hidden",
+              transformOrigin: "top right",
+              animation: "menuSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <a
+                href="#features"
+                onClick={() => setMobileMenuOpen(false)}
+                role="menuitem"
+                className="landing-mobile-menu-link"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "right",
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  color: "#2f2118",
+                  background: "rgba(255,255,255,0.28)",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  lineHeight: 1.2,
+                  textShadow: "0 1px 2px rgba(255,255,255,0.42)",
+                  transition: "transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
+                  animation: "menuItemSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.03s both",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.42)";
+                  e.currentTarget.style.transform = "translateX(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 14px rgba(62,38,22,0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.28)";
+                  e.currentTarget.style.transform = "translateX(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                Features
+              </a>
+              <a
+                href="#pricing"
+                onClick={() => setMobileMenuOpen(false)}
+                role="menuitem"
+                className="landing-mobile-menu-link"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "right",
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  color: "#2f2118",
+                  background: "rgba(255,255,255,0.28)",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  lineHeight: 1.2,
+                  textShadow: "0 1px 2px rgba(255,255,255,0.42)",
+                  transition: "transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
+                  animation: "menuItemSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.42)";
+                  e.currentTarget.style.transform = "translateX(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 14px rgba(62,38,22,0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.28)";
+                  e.currentTarget.style.transform = "translateX(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                Pricing
+              </a>
+              <Link
+                href="/docs"
+                onClick={() => setMobileMenuOpen(false)}
+                role="menuitem"
+                className="landing-mobile-menu-link"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "right",
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  color: "#2f2118",
+                  background: "rgba(255,255,255,0.28)",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  lineHeight: 1.2,
+                  textShadow: "0 1px 2px rgba(255,255,255,0.42)",
+                  transition: "transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
+                  animation: "menuItemSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.13s both",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.42)";
+                  e.currentTarget.style.transform = "translateX(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 14px rgba(62,38,22,0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.28)";
+                  e.currentTarget.style.transform = "translateX(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                Docs
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
 
@@ -1100,6 +1270,10 @@ export default function LandingPage() {
           min-width: 0;
         }
 
+        .landing-mobile-menu-toggle {
+          display: none;
+        }
+
         @media (min-width: 769px) and (max-width: 900px) {
           .landing-notion-grid {
             grid-template-columns: 1fr !important;
@@ -1115,9 +1289,18 @@ export default function LandingPage() {
         @media (max-width: 768px) {
           .nav-links-desktop { display: none !important; }
 
+          .landing-mobile-menu-toggle {
+            display: inline-flex !important;
+          }
+
           .landing-nav-wrap {
             width: calc(100% - 16px) !important;
             top: 10px !important;
+          }
+
+          .landing-mobile-menu-panel {
+            width: 100% !important;
+            max-width: none !important;
           }
 
           .landing-nav {
@@ -1133,6 +1316,10 @@ export default function LandingPage() {
 
           .landing-auth-actions {
             gap: 4px !important;
+          }
+
+          .landing-signin-btn {
+            display: none !important;
           }
 
           .landing-signin-btn {
@@ -1305,6 +1492,43 @@ export default function LandingPage() {
         @keyframes footerGlowPulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.75; }
+        }
+
+        @keyframes menuSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.94);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes menuItemSlideIn {
+          from {
+            opacity: 0;
+            transform: translateX(16px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .landing-mobile-menu-link:focus-visible {
+          outline: 2px solid rgba(40, 78, 226, 0.6);
+          outline-offset: 2px;
+          background: rgba(255,255,255,0.5) !important;
+          box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .landing-mobile-menu-panel,
+          .landing-mobile-menu-link {
+            animation: none !important;
+            transition: none !important;
+          }
         }
       `}</style>
     </div>

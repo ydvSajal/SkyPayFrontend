@@ -27,8 +27,6 @@ import {
 export default function DocsPage() {
   const { isAuthenticated, isLoading } = useAuth()
   const [activeSection, setActiveSection] = useState("getting-started")
-  const [isMobile, setIsMobile] = useState(false)
-  const [isTablet, setIsTablet] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,17 +55,6 @@ export default function DocsPage() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 900)
-      setIsTablet(window.innerWidth < 1200)
-    }
-
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
@@ -87,19 +74,17 @@ export default function DocsPage() {
   return (
     <div style={{ 
       minHeight: "100vh", 
-      width: "100%",
-      overflowX: "hidden",
       background: "hsl(220, 30%, 98%)",
       fontFamily: "var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     }}>
       {/* Navigation Bar */}
       <div style={{
         position: "fixed",
-        top: isMobile ? "10px" : "18px",
+        top: "18px",
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 100,
-        width: isMobile ? "calc(100% - 16px)" : "calc(100% - 48px)",
+        width: "calc(100% - 48px)",
         maxWidth: "1200px",
       }}>
         <nav style={{
@@ -109,17 +94,16 @@ export default function DocsPage() {
           borderRadius: "100px",
           border: "1px solid rgba(255, 255, 255, 0.9)",
           boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06)",
-          padding: isMobile ? "8px 10px" : "0 6px 0 24px",
+          padding: "0 6px 0 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          height: isMobile ? "auto" : "56px",
-          gap: isMobile ? "8px" : "0",
+          height: "56px",
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "10px" : "32px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
             <Link href="/landing#hero" style={{ textDecoration: "none" }}>
               <h1 style={{
-                fontSize: isMobile ? "19px" : "22px",
+                fontSize: "22px",
                 fontWeight: "600",
                 letterSpacing: "0.01em",
                 color: "#0f0f0f",
@@ -131,7 +115,6 @@ export default function DocsPage() {
                 SKYPay
               </h1>
             </Link>
-            {!isMobile && (
             <div style={{ display: "flex", gap: "2px", alignItems: "center" }}>
               {["Features", "Pricing", "Docs"].map((item) => (
                 <a
@@ -162,10 +145,9 @@ export default function DocsPage() {
                 </a>
               ))}
             </div>
-            )}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             {!isLoading && (
               <>
                 {isAuthenticated ? (
@@ -175,7 +157,7 @@ export default function DocsPage() {
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
-                      padding: isMobile ? "8px 12px" : "8px 16px",
+                      padding: "8px 16px",
                       borderRadius: "100px",
                       background: "#0f0f0f",
                       color: "#fff",
@@ -184,11 +166,11 @@ export default function DocsPage() {
                       fontWeight: "600",
                     }}
                   >
-                    {isMobile ? "Dash" : "Dashboard"}
+                    Dashboard
                   </Link>
                 ) : (
                   <>
-                    {!isMobile && <Link
+                    <Link
                       href="/auth/login"
                       style={{
                         color: "#555",
@@ -209,13 +191,13 @@ export default function DocsPage() {
                       }}
                     >
                       Sign In
-                    </Link>}
+                    </Link>
                     <Link
                       href="/auth/login"
                       style={{
                         display: "inline-flex",
                         alignItems: "center",
-                        padding: isMobile ? "8px 13px" : "8px 18px",
+                        padding: "8px 18px",
                         borderRadius: "100px",
                         background: "#0f0f0f",
                         color: "#fff",
@@ -225,7 +207,7 @@ export default function DocsPage() {
                         boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                       }}
                     >
-                      {isMobile ? "Start" : "Get Started"}
+                      Get Started
                     </Link>
                   </>
                 )}
@@ -237,26 +219,26 @@ export default function DocsPage() {
 
       {/* Hero Section */}
       <div style={{
-        paddingTop: isMobile ? "108px" : "140px",
-        paddingBottom: isMobile ? "40px" : "60px",
+        paddingTop: "140px",
+        paddingBottom: "60px",
         textAlign: "center",
         background: "linear-gradient(180deg, rgba(255, 232, 204, 0.85) 0%, rgba(255, 240, 222, 0.55) 26%, rgba(242, 236, 255, 0.35) 52%, rgba(220, 239, 255, 0.22) 72%, rgba(220, 239, 255, 0) 100%)",
         position: "relative",
       }}>
         <div style={{
           position: "absolute",
-          top: isMobile ? "34px" : "60px",
+          top: "60px",
           left: "50%",
           transform: "translateX(-50%)",
-          width: isMobile ? "92vw" : "860px",
-          height: isMobile ? "320px" : "460px",
+          width: "860px",
+          height: "460px",
           background: "radial-gradient(ellipse, rgba(251, 146, 60, 0.46) 0%, rgba(251, 146, 60, 0.24) 30%, rgba(167, 139, 250, 0.22) 55%, rgba(125, 211, 252, 0.14) 70%, transparent 84%)",
           borderRadius: "50%",
           filter: "blur(56px)",
           pointerEvents: "none",
         }} />
 
-        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: 1, padding: isMobile ? "0 16px" : "0 24px" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <div style={{
             display: "inline-flex",
             alignItems: "center",
@@ -274,7 +256,7 @@ export default function DocsPage() {
           </div>
 
           <h1 style={{
-            fontSize: isMobile ? "clamp(34px, 10vw, 46px)" : "clamp(42px, 6vw, 72px)",
+            fontSize: "clamp(42px, 6vw, 72px)",
             fontWeight: "600",
             letterSpacing: "-1px",
             lineHeight: 1.1,
@@ -287,7 +269,7 @@ export default function DocsPage() {
           </h1>
 
           <p style={{
-            fontSize: isMobile ? "16px" : "18px",
+            fontSize: "18px",
             color: "#555",
             lineHeight: 1.7,
             maxWidth: "560px",
@@ -299,14 +281,12 @@ export default function DocsPage() {
           <div style={{
             display: "inline-flex",
             alignItems: "center",
-            justifyContent: "center",
-            flexWrap: "wrap",
             gap: "8px",
-            padding: isMobile ? "10px 16px" : "12px 24px",
+            padding: "12px 24px",
             borderRadius: "100px",
             background: "rgba(255,255,255,0.9)",
             border: "1px solid rgba(0,0,0,0.08)",
-            fontSize: isMobile ? "13px" : "14px",
+            fontSize: "14px",
             color: "#666",
           }}>
             <Bot size={18} color="#6366f1" />
@@ -316,26 +296,16 @@ export default function DocsPage() {
       </div>
 
       {/* Main Content */}
-      <div style={{
-        maxWidth: "1200px",
-        margin: "0 auto",
-        width: "100%",
-        boxSizing: "border-box",
-        overflowX: "hidden",
-        padding: isMobile ? "24px 12px 56px" : "40px 24px 80px",
-        display: "grid",
-        gridTemplateColumns: isTablet ? "1fr" : "260px 1fr",
-        gap: isTablet ? "22px" : "48px",
-      }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px 80px", display: "grid", gridTemplateColumns: "260px 1fr", gap: "48px" }}>
         {/* Sidebar Navigation */}
-        <div style={{ position: isTablet ? "static" : "sticky", top: "100px", height: "fit-content" }}>
+        <div style={{ position: "sticky", top: "100px", height: "fit-content" }}>
           <nav style={{
             background: "rgba(255,255,255,0.8)",
             borderRadius: "20px",
-            padding: isMobile ? "14px" : "24px",
+            padding: "24px",
             border: "1px solid rgba(0,0,0,0.06)",
           }}>
-            {!isTablet && <h3 style={{
+            <h3 style={{
               fontSize: "12px",
               fontWeight: "700",
               letterSpacing: "0.1em",
@@ -344,14 +314,8 @@ export default function DocsPage() {
               marginBottom: "16px",
             }}>
               On this page
-            </h3>}
-            <div style={{
-              display: "flex",
-              flexDirection: isTablet ? "row" : "column",
-              gap: "6px",
-              overflowX: isTablet ? "auto" : "visible",
-              paddingBottom: isTablet ? "2px" : "0",
-            }}>
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {navItems.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -360,17 +324,15 @@ export default function DocsPage() {
                     display: "flex",
                     alignItems: "center",
                     gap: "10px",
-                    padding: isMobile ? "9px 12px" : "10px 12px",
+                    padding: "10px 12px",
                     borderRadius: "12px",
                     border: "none",
                     background: activeSection === id ? "rgba(99,102,241,0.1)" : "transparent",
                     color: activeSection === id ? "#6366f1" : "#555",
-                    fontSize: "13px",
+                    fontSize: "14px",
                     fontWeight: "500",
                     cursor: "pointer",
                     textAlign: "left",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
                     transition: "all 0.2s",
                   }}
                   onMouseEnter={(e) => {
@@ -390,7 +352,7 @@ export default function DocsPage() {
               ))}
             </div>
 
-            {!isTablet && <div style={{
+            <div style={{
               marginTop: "24px",
               paddingTop: "24px",
               borderTop: "1px solid rgba(0,0,0,0.06)",
@@ -421,21 +383,18 @@ export default function DocsPage() {
                 Get Started Free
                 <ArrowRight size={16} />
               </Link>
-            </div>}
+            </div>
           </nav>
         </div>
 
         {/* Documentation Content */}
-        <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "24px" : "60px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "60px" }}>
           {/* Getting Started */}
           <section id="getting-started" style={{
             background: "rgba(255,255,255,0.9)",
             borderRadius: "24px",
-            padding: isMobile ? "24px" : "48px",
+            padding: "48px",
             border: "1px solid rgba(0,0,0,0.06)",
-            width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
               <div style={{
@@ -450,7 +409,7 @@ export default function DocsPage() {
                 <Zap size={24} color="#f97316" />
               </div>
               <h2 style={{
-                fontSize: isMobile ? "28px" : "32px",
+                fontSize: "32px",
                 fontWeight: "700",
                 color: "#0f0f0f",
                 margin: 0,
@@ -461,7 +420,7 @@ export default function DocsPage() {
             </div>
 
             <div style={{
-              padding: isMobile ? "18px" : "24px",
+              padding: "24px",
               borderRadius: "16px",
               background: "linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.08) 100%)",
               border: "1px solid rgba(99,102,241,0.12)",
@@ -477,7 +436,7 @@ export default function DocsPage() {
               </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
               {[
                 {
                   title: "Quick Start",
@@ -505,7 +464,6 @@ export default function DocsPage() {
                     borderRadius: "16px",
                     border: "1px solid rgba(0,0,0,0.06)",
                     background: "rgba(248,249,252,0.5)",
-                    minWidth: 0,
                     transition: "transform 0.2s, box-shadow 0.2s",
                     cursor: "pointer",
                   }}
@@ -545,11 +503,8 @@ export default function DocsPage() {
           <section id="what-is-skypay" style={{
             background: "rgba(255,255,255,0.9)",
             borderRadius: "24px",
-            padding: isMobile ? "24px" : "48px",
+            padding: "48px",
             border: "1px solid rgba(0,0,0,0.06)",
-            width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
               <div style={{
@@ -564,7 +519,7 @@ export default function DocsPage() {
                 <Sparkles size={24} color="#6366f1" />
               </div>
               <h2 style={{
-                fontSize: isMobile ? "28px" : "32px",
+                fontSize: "32px",
                 fontWeight: "700",
                 color: "#0f0f0f",
                 margin: 0,
@@ -603,8 +558,7 @@ export default function DocsPage() {
 
             <div style={{
               display: "flex",
-              alignItems: isMobile ? "flex-start" : "center",
-              flexDirection: isMobile ? "column" : "row",
+              alignItems: "center",
               gap: "12px",
               padding: "20px 24px",
               borderRadius: "16px",
@@ -627,11 +581,8 @@ export default function DocsPage() {
           <section id="how-it-works" style={{
             background: "rgba(255,255,255,0.9)",
             borderRadius: "24px",
-            padding: isMobile ? "24px" : "48px",
+            padding: "48px",
             border: "1px solid rgba(0,0,0,0.06)",
-            width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <div style={{
@@ -646,7 +597,7 @@ export default function DocsPage() {
                 <ArrowRight size={24} color="#8b5cf6" />
               </div>
               <h2 style={{
-                fontSize: isMobile ? "28px" : "32px",
+                fontSize: "32px",
                 fontWeight: "700",
                 color: "#0f0f0f",
                 margin: 0,
@@ -693,13 +644,12 @@ export default function DocsPage() {
                   key={num}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: isMobile ? "1fr" : "60px 1fr",
-                    gap: isMobile ? "14px" : "24px",
-                    padding: isMobile ? "20px" : "32px",
+                    gridTemplateColumns: "60px 1fr",
+                    gap: "24px",
+                    padding: "32px",
                     borderRadius: "20px",
                     border: "1px solid rgba(0,0,0,0.06)",
                     background: "rgba(248,249,252,0.5)",
-                    minWidth: 0,
                     transition: "transform 0.2s",
                   }}
                   onMouseEnter={(e) => {
@@ -718,7 +668,6 @@ export default function DocsPage() {
                     alignItems: "center",
                     justifyContent: "center",
                     position: "relative",
-                    marginBottom: isMobile ? "4px" : "0",
                   }}>
                     <Icon size={28} color={color} />
                     <span style={{
@@ -741,7 +690,7 @@ export default function DocsPage() {
                   </div>
                   <div>
                     <h4 style={{
-                      fontSize: isMobile ? "18px" : "20px",
+                      fontSize: "20px",
                       fontWeight: "700",
                       color: "#0f0f0f",
                       marginBottom: "12px",
@@ -766,11 +715,8 @@ export default function DocsPage() {
           <section id="key-features" style={{
             background: "rgba(255,255,255,0.9)",
             borderRadius: "24px",
-            padding: isMobile ? "24px" : "48px",
+            padding: "48px",
             border: "1px solid rgba(0,0,0,0.06)",
-            width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <div style={{
@@ -785,7 +731,7 @@ export default function DocsPage() {
                 <Bot size={24} color="#f97316" />
               </div>
               <h2 style={{
-                fontSize: isMobile ? "28px" : "32px",
+                fontSize: "32px",
                 fontWeight: "700",
                 color: "#0f0f0f",
                 margin: 0,
@@ -795,7 +741,7 @@ export default function DocsPage() {
               </h2>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
               {[
                 {
                   icon: Bot,
@@ -849,11 +795,10 @@ export default function DocsPage() {
                 <div
                   key={title}
                   style={{
-                    padding: isMobile ? "20px" : "28px",
+                    padding: "28px",
                     borderRadius: "18px",
                     border: "1px solid rgba(0,0,0,0.06)",
                     background: "rgba(248,249,252,0.5)",
-                    minWidth: 0,
                     transition: "transform 0.2s, box-shadow 0.2s",
                   }}
                   onMouseEnter={(e) => {
@@ -902,11 +847,8 @@ export default function DocsPage() {
           <section id="services" style={{
             background: "rgba(255,255,255,0.9)",
             borderRadius: "24px",
-            padding: isMobile ? "24px" : "48px",
+            padding: "48px",
             border: "1px solid rgba(0,0,0,0.06)",
-            width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <div style={{
@@ -921,7 +863,7 @@ export default function DocsPage() {
                 <Wallet size={24} color="#22c55e" />
               </div>
               <h2 style={{
-                fontSize: isMobile ? "28px" : "32px",
+                fontSize: "32px",
                 fontWeight: "700",
                 color: "#0f0f0f",
                 margin: 0,
@@ -983,13 +925,11 @@ export default function DocsPage() {
                   key={title}
                   style={{
                     display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    gap: isMobile ? "14px" : "20px",
-                    padding: isMobile ? "20px" : "28px",
+                    gap: "20px",
+                    padding: "28px",
                     borderRadius: "18px",
                     border: "1px solid rgba(0,0,0,0.06)",
                     background: "rgba(248,249,252,0.5)",
-                    minWidth: 0,
                     transition: "transform 0.2s",
                   }}
                   onMouseEnter={(e) => {
@@ -1013,7 +953,7 @@ export default function DocsPage() {
                   </div>
                   <div>
                     <h4 style={{
-                      fontSize: isMobile ? "17px" : "18px",
+                      fontSize: "18px",
                       fontWeight: "700",
                       color: "#0f0f0f",
                       marginBottom: "10px",
@@ -1038,11 +978,8 @@ export default function DocsPage() {
           <section id="security" style={{
             background: "rgba(255,255,255,0.9)",
             borderRadius: "24px",
-            padding: isMobile ? "24px" : "48px",
+            padding: "48px",
             border: "1px solid rgba(0,0,0,0.06)",
-            width: "100%",
-            boxSizing: "border-box",
-            overflow: "hidden",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <div style={{
@@ -1057,7 +994,7 @@ export default function DocsPage() {
                 <Shield size={24} color="#f59e0b" />
               </div>
               <h2 style={{
-                fontSize: isMobile ? "28px" : "32px",
+                fontSize: "32px",
                 fontWeight: "700",
                 color: "#0f0f0f",
                 margin: 0,
@@ -1068,7 +1005,7 @@ export default function DocsPage() {
             </div>
 
             <div style={{
-              padding: isMobile ? "20px" : "28px",
+              padding: "28px",
               borderRadius: "18px",
               background: "linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.06) 100%)",
               border: "1px solid rgba(99,102,241,0.12)",
@@ -1096,7 +1033,7 @@ export default function DocsPage() {
               </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
               {[
                 {
                   title: "Secure Escrow",
@@ -1126,7 +1063,6 @@ export default function DocsPage() {
                     borderRadius: "16px",
                     border: "1px solid rgba(0,0,0,0.06)",
                     background: "rgba(248,249,252,0.5)",
-                    minWidth: 0,
                   }}
                 >
                   <div style={{
@@ -1160,7 +1096,7 @@ export default function DocsPage() {
           {/* CTA Section */}
           <div style={{
             textAlign: "center",
-            padding: isMobile ? "36px 20px" : "60px 40px",
+            padding: "60px 40px",
             borderRadius: "24px",
             background: "linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.08) 50%, rgba(249,115,22,0.06) 100%)",
             border: "1px solid rgba(99,102,241,0.12)",
@@ -1176,7 +1112,7 @@ export default function DocsPage() {
               Ready to Automate Your Payments?
             </h2>
             <p style={{
-              fontSize: isMobile ? "15px" : "17px",
+              fontSize: "17px",
               color: "#555",
               lineHeight: 1.7,
               maxWidth: "500px",
@@ -1191,7 +1127,7 @@ export default function DocsPage() {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "8px",
-                  padding: isMobile ? "12px 22px" : "14px 28px",
+                  padding: "14px 28px",
                   borderRadius: "100px",
                   background: "#0f0f0f",
                   color: "#fff",
@@ -1219,7 +1155,7 @@ export default function DocsPage() {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "8px",
-                  padding: isMobile ? "12px 22px" : "14px 28px",
+                  padding: "14px 28px",
                   borderRadius: "100px",
                   background: "rgba(255,255,255,0.9)",
                   color: "#333",
@@ -1253,7 +1189,7 @@ export default function DocsPage() {
       {/* Footer */}
       <footer style={{
         borderTop: "1px solid rgba(0,0,0,0.06)",
-        padding: isMobile ? "28px 16px" : "40px 24px",
+        padding: "40px 24px",
         textAlign: "center",
       }}>
         <p style={{
@@ -1266,7 +1202,6 @@ export default function DocsPage() {
         <div style={{
           display: "flex",
           justifyContent: "center",
-          flexWrap: "wrap",
           gap: "24px",
           fontSize: "12px",
         }}>
