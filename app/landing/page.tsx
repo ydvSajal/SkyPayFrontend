@@ -103,7 +103,7 @@ export default function LandingPage() {
               {["Features", "Pricing", "Docs"].map((item) => (
                 <a
                   key={item}
-                  href={`#${item.toLowerCase()}`}
+                  href={item === "Docs" ? "/docs" : `#${item.toLowerCase()}`}
                   style={{
                     color: "#555",
                     textDecoration: "none",

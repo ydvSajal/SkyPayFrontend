@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 // Define protected routes
 const protectedRoutes = ['/dashboard', '/api/chat']
 const authRoutes: string[] = [] // Don't auto-redirect from login (user may need wallet/notion steps)
-const publicRoutes = ['/auth/notion-callback', '/auth/login', '/landing', '/']
+const publicRoutes = ['/auth/notion-callback', '/auth/login', '/landing', '/', '/docs']
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
