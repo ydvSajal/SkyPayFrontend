@@ -27,40 +27,18 @@ export interface NotionOAuthResponse {
 }
 
 const LOCAL_API_BASE_URL = 'http://localhost:3001'
-const CONFIGURED_API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.trim() || ''
-
-function normalizeBaseUrl(url: string) {
-  return url.endsWith('/') ? url.slice(0, -1) : url
-}
-
-export function getClientApiBaseUrl() {
-  if (CONFIGURED_API_BASE_URL) {
-    return normalizeBaseUrl(CONFIGURED_API_BASE_URL)
-  }
-
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname
-    const isLocalHost = host === 'localhost' || host === '127.0.0.1'
-    if (isLocalHost) {
-      return LOCAL_API_BASE_URL
-    }
-
-    throw new Error('NEXT_PUBLIC_API_URL is required in production.')
-  }
-
-  return LOCAL_API_BASE_URL
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || LOCAL_API_BASE_URL
 
 class AuthService {
   private token: string | null = null
   private initialized = false
   private readonly inFlightGetRequests = new Map<string, Promise<unknown>>()
 
-  private shouldUseLocalFallback(primaryBaseUrl: string) {
+  private shouldUseLocalFallback() {
     if (typeof window === 'undefined') return false
     const host = window.location.hostname
     const isLocalHost = host === 'localhost' || host === '127.0.0.1'
-    return isLocalHost && primaryBaseUrl !== LOCAL_API_BASE_URL
+    return isLocalHost && API_BASE_URL !== LOCAL_API_BASE_URL
   }
 
   constructor() {
@@ -133,10 +111,8 @@ class AuthService {
   ): Promise<T> {
     // Initialize token if not already done
     this.initializeToken()
-
-    const baseUrl = getClientApiBaseUrl()
     
-    const url = `${baseUrl}${endpoint}`
+    const url = `${API_BASE_URL}${endpoint}`
     
     const config: RequestInit = {
       headers: {
@@ -164,7 +140,7 @@ class AuthService {
         try {
           response = await fetch(url, config)
         } catch (error) {
-          if (!this.shouldUseLocalFallback(baseUrl)) {
+          if (!this.shouldUseLocalFallback()) {
             throw error
           }
 
@@ -191,8 +167,13 @@ class AuthService {
 
         return data as T
       } catch (error) {
-        console.error(`API request failed: ${endpoint}`, error)
-        throw error
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        console.warn(`API request warning: ${endpoint} (${errorMessage})`)
+
+        return {
+          success: false,
+          error: errorMessage,
+        } as T
       }
     }
 
@@ -200,9 +181,14 @@ class AuthService {
 
     if (getRequestKey) {
       this.inFlightGetRequests.set(getRequestKey, requestPromise)
-      requestPromise.finally(() => {
-        this.inFlightGetRequests.delete(getRequestKey)
-      })
+      requestPromise.then(
+        () => {
+          this.inFlightGetRequests.delete(getRequestKey)
+        },
+        () => {
+          this.inFlightGetRequests.delete(getRequestKey)
+        }
+      )
     }
 
     return requestPromise
@@ -479,4 +465,16 @@ class AuthService {
 }
 
 export const authService = new AuthService()
-export default authService 
+export default authService
+
+export function getClientApiBaseUrl(): string {
+  const url = process.env.NEXT_PUBLIC_API_URL
+  if (!url) {
+    // In development, fall back to localhost
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return LOCAL_API_BASE_URL
+    }
+    throw new Error('NEXT_PUBLIC_API_URL environment variable is not set')
+  }
+  return url
+}

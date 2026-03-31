@@ -27,6 +27,25 @@ export default function LandingPage() {
   const [footerVisible, setFooterVisible] = useState(false)
   const footerRef = useRef<HTMLElement>(null)
 
+  // Scroll-triggered reveal animations
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-animate]')
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view')
+            io.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  // Footer glow observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -38,12 +57,13 @@ export default function LandingPage() {
     return () => observer.disconnect()
   }, [])
 
+
   return (
-    <div className="min-h-screen" style={{ background: "hsl(220, 30%, 98%)", fontFamily: "var(--font-inter), 'Inter', sans-serif" }}>
+    <div className="min-h-screen landing-shell" style={{ background: "hsl(220, 30%, 98%)", fontFamily: "var(--font-inter), 'Inter', sans-serif" }}>
 
       {/* Navigation */}
       {/* Floating Glassmorphism Navbar */}
-      <div style={{
+      <div className="landing-nav-wrap" style={{
         position: "fixed",
         top: "18px",
         left: "50%",
@@ -52,7 +72,7 @@ export default function LandingPage() {
         width: "calc(100% - 48px)",
         maxWidth: "900px",
       }}>
-        <nav style={{
+        <nav className="landing-nav" style={{
           background: "rgba(255, 255, 255, 0.6)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
@@ -66,7 +86,7 @@ export default function LandingPage() {
           height: "56px",
         }}>
           {/* Logo + Nav Links */}
-          <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+          <div className="landing-logo-row" style={{ display: "flex", alignItems: "center", gap: "32px" }}>
             <Link href="/landing#hero" style={{ textDecoration: "none" }}>
               <h1 style={{
                 fontSize: "22px", fontWeight: "600",
@@ -111,7 +131,7 @@ export default function LandingPage() {
           </div>
 
           {/* Auth Buttons */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div className="landing-auth-actions" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             {!isLoading && (
               <>
                 {isAuthenticated && user ? (
@@ -132,7 +152,7 @@ export default function LandingPage() {
                   </>
                 ) : (
                   <>
-                    <Link href="/auth/login" style={{
+                    <Link href="/auth/login" className="landing-signin-btn" style={{
                       color: "#555", textDecoration: "none",
                       padding: "8px 14px", borderRadius: "100px",
                       fontSize: "12.5px", fontWeight: "500",
@@ -149,7 +169,7 @@ export default function LandingPage() {
                     >
                       Sign In
                     </Link>
-                    <Link href="/auth/login" style={{
+                    <Link href="/auth/login" className="landing-getstarted-btn" style={{
                       display: "inline-flex", alignItems: "center",
                       padding: "8px 18px", borderRadius: "100px",
                       background: "#0f0f0f", color: "#fff",
@@ -178,7 +198,7 @@ export default function LandingPage() {
 
 
       {/* Hero Section */}
-      <section id="hero" style={{
+      <section id="hero" className="landing-section landing-hero" style={{
         position: "relative",
         overflow: "hidden",
         paddingTop: "120px",
@@ -221,7 +241,7 @@ export default function LandingPage() {
           pointerEvents: "none",
         }} />
 
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px", width: "100%", position: "relative", zIndex: 1 }}>
+        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: 0, paddingBottom: 0, width: "100%", position: "relative", zIndex: 1 }}>
           <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
             {/* Decorative ornament */}
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "28px" }}>
@@ -243,7 +263,7 @@ export default function LandingPage() {
               </span>
             </div>
 
-            <h1 style={{
+            <h1 className="landing-hero-title" style={{
               fontSize: "clamp(46px, 7vw, 88px)",
               fontWeight: "600",
               letterSpacing: "-1px",
@@ -258,7 +278,7 @@ export default function LandingPage() {
               <span style={{ color: "#0f0f0f", fontStyle: "normal" }}>all crypto payments</span>
             </h1>
 
-            <p style={{
+            <p className="landing-hero-copy" style={{
               fontSize: "18px",
               color: "#555",
               lineHeight: 1.7,
@@ -301,8 +321,8 @@ export default function LandingPage() {
           </div>
 
           {/* Hero Demo Card */}
-          <div style={{ marginTop: "60px" }}>
-            <div style={{
+          <div className="landing-demo-wrap" style={{ marginTop: "60px" }}>
+            <div className="landing-demo-shell" style={{
               background: "linear-gradient(145deg, rgba(255,255,255,0.94) 0%, rgba(250,252,255,0.92) 52%, rgba(255,248,238,0.92) 100%)",
               borderRadius: "24px",
               border: "1px solid rgba(17,24,39,0.08)",
@@ -339,14 +359,14 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)" }}>
+              <div className="landing-demo-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)" }}>
                 {/* Notion Side */}
-                <div style={{ padding: "28px", borderRight: "1px solid rgba(15,23,42,0.06)", background: "rgba(255,255,255,0.55)" }}>
+                <div className="landing-demo-col landing-demo-col-left" style={{ padding: "28px", borderRight: "1px solid rgba(15,23,42,0.06)", background: "rgba(255,255,255,0.55)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
                     <Database size={20} color="#333" />
                     <span style={{ fontWeight: "600", fontSize: "14px" }}>Your Notion Database</span>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px", marginBottom: "16px" }}>
+                  <div className="landing-demo-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px", marginBottom: "16px" }}>
                     {[
                       { label: "Open", value: "12" },
                       { label: "Paid", value: "84" },
@@ -390,7 +410,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Agent Side */}
-                <div style={{ padding: "28px", background: "linear-gradient(165deg, rgba(255,255,255,0.42) 0%, rgba(240,247,255,0.62) 100%)" }}>
+                <div className="landing-demo-col" style={{ padding: "28px", background: "linear-gradient(165deg, rgba(255,255,255,0.42) 0%, rgba(240,247,255,0.62) 100%)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginBottom: "18px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <Bot size={20} color="#6366f1" />
@@ -412,7 +432,7 @@ export default function LandingPage() {
                   }}>
                     <p style={{ margin: "0 0 4px", fontSize: "11px", color: "#64748b", letterSpacing: "0.04em", textTransform: "uppercase" }}>Current instruction</p>
                     <p style={{ margin: 0, fontSize: "13px", color: "#1e293b", fontWeight: "500" }}>
-                      "Collect 0.15 ETH from Acme Corp, auto-refund after 30 days, then mark paid in Notion."
+                      &quot;Collect 0.15 ETH from Acme Corp, auto-refund after 30 days, then mark paid in Notion.&quot;
                     </p>
                   </div>
 
@@ -481,8 +501,8 @@ export default function LandingPage() {
       </div>
 
       {/* How It Works */}
-      <section style={{ padding: "80px 24px", background: "#fff" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <section className="landing-section" style={{ padding: "80px 0", background: "#fff" }}>
+        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "60px" }}>
             <h2 style={{
               fontSize: "clamp(28px, 4vw, 48px)",
@@ -500,7 +520,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
+          <div className="landing-how-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
             {[
               {
                 num: "01",
@@ -556,8 +576,8 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" style={{
-        padding: "80px 24px",
+      <section id="features" className="landing-section" style={{
+        padding: "80px 0",
         position: "relative",
         overflow: "hidden",
       }}>
@@ -570,7 +590,7 @@ export default function LandingPage() {
           filter: "blur(80px)",
           pointerEvents: "none",
         }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <div style={{ textAlign: "center", marginBottom: "60px" }}>
             <h2 style={{
               fontSize: "clamp(28px, 4vw, 48px)",
@@ -588,7 +608,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+          <div className="landing-features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
             {[
               { Icon: Calendar, color: "#6366f1", title: "Automated Scheduling", desc: "Agent automatically schedules recurring payments, subscription renewals, and invoice due dates based on your Notion data." },
               { Icon: Send, color: "#8b5cf6", title: "Smart Payment Sending", desc: "Create payment requests in Notion, agent instantly generates X402Pay links and sends them to clients with personalized messages." },
@@ -625,9 +645,9 @@ export default function LandingPage() {
       </section>
 
       {/* Notion Integration Showcase */}
-      <section style={{ padding: "80px 24px", background: "#fff" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
+      <section className="landing-section" style={{ padding: "80px 0", background: "#fff" }}>
+        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div className="landing-notion-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
             <div>
               <h2 style={{
                 fontSize: "clamp(28px, 3.5vw, 44px)",
@@ -676,7 +696,7 @@ export default function LandingPage() {
               </button>
             </div>
 
-            <div style={{
+              <div className="landing-notion-table-wrap" style={{
               background: "rgba(248,249,252,0.8)",
               borderRadius: "20px",
               padding: "6px",
@@ -694,7 +714,7 @@ export default function LandingPage() {
                   <span style={{ fontWeight: "600", fontSize: "14px" }}>Client Invoices Database</span>
                 </div>
                 <div style={{ padding: "20px" }}>
-                  <div style={{
+                  <div className="landing-table-grid landing-table-head" style={{
                     display: "grid", gridTemplateColumns: "1fr 80px 80px 110px",
                     gap: "12px", fontSize: "11px", fontWeight: "600",
                     color: "#999", textTransform: "uppercase", letterSpacing: "0.05em",
@@ -704,29 +724,29 @@ export default function LandingPage() {
                     <div>Client</div>
                     <div>Amount</div>
                     <div>Status</div>
-                    <div>Action</div>
+                    <div className="landing-table-action">Action</div>
                   </div>
                   {[
                     { client: "Acme Corp", amount: "0.15 ETH", badge: "Pending", badgeC: "#f59e0b", badgeBg: "rgba(245,158,11,0.1)", action: "Agent: Sent reminder", actionC: "#6366f1" },
                     { client: "TechStart", amount: "0.25 ETH", badge: "Paid", badgeC: "#22c55e", badgeBg: "rgba(34,197,94,0.1)", action: "Agent: Updated", actionC: "#22c55e" },
                     { client: "DevCorp", amount: "0.08 ETH", badge: "Scheduled", badgeC: "#3b82f6", badgeBg: "rgba(59,130,246,0.1)", action: "Agent: Sending Jan 15", actionC: "#8b5cf6" },
                   ].map((row) => (
-                    <div key={row.client} style={{
+                    <div key={row.client} className="landing-table-grid landing-table-row" style={{
                       display: "grid", gridTemplateColumns: "1fr 80px 80px 110px",
                       gap: "12px", alignItems: "center",
                       padding: "10px 0",
                       borderBottom: "1px solid rgba(0,0,0,0.04)",
                     }}>
-                      <div style={{ fontSize: "13px", fontWeight: "500" }}>{row.client}</div>
-                      <div style={{ fontSize: "13px", color: "#444" }}>{row.amount}</div>
-                      <div>
+                      <div className="landing-cell-client" style={{ fontSize: "13px", fontWeight: "500" }}>{row.client}</div>
+                      <div className="landing-cell-amount" style={{ fontSize: "13px", color: "#444" }}>{row.amount}</div>
+                      <div className="landing-cell-status">
                         <span style={{
                           padding: "3px 8px", borderRadius: "100px",
                           fontSize: "11px", fontWeight: "600",
                           color: row.badgeC, background: row.badgeBg,
                         }}>{row.badge}</span>
                       </div>
-                      <div style={{ fontSize: "11px", color: row.actionC, fontWeight: "500" }}>{row.action}</div>
+                      <div className="landing-table-action" style={{ fontSize: "11px", color: row.actionC, fontWeight: "500" }}>{row.action}</div>
                     </div>
                   ))}
                 </div>
@@ -737,8 +757,8 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section - Inspired by Sarvam pricing UI */}
-      <section id="pricing" style={{
-        padding: "80px 24px",
+      <section id="pricing" className="landing-section" style={{
+        padding: "80px 0",
         position: "relative",
         overflow: "hidden",
         background: "linear-gradient(to bottom, hsl(220, 30%, 98%), #fff)",
@@ -749,7 +769,7 @@ export default function LandingPage() {
           background: "radial-gradient(ellipse, rgba(196, 181, 253, 0.2) 0%, transparent 70%)",
           borderRadius: "50%", filter: "blur(60px)", pointerEvents: "none",
         }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           {/* Ornament */}
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
             <span style={{ fontSize: "16px", letterSpacing: "6px", color: "#ddd" }}>✦ ✦ ✦</span>
@@ -772,7 +792,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", alignItems: "start" }}>
+          <div className="landing-pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", alignItems: "start" }}>
             {/* Starter */}
             <div style={{
               background: "#fff",
@@ -875,8 +895,8 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section - with gradient similar to footer blob */}
-      <section style={{
-        padding: "80px 24px",
+      <section className="landing-section" style={{
+        padding: "80px 0",
         position: "relative",
         overflow: "hidden",
         background: "#fff",
@@ -887,7 +907,7 @@ export default function LandingPage() {
           background: "radial-gradient(ellipse, rgba(251, 146, 60, 0.25) 0%, rgba(196, 181, 253, 0.2) 40%, transparent 70%)",
           borderRadius: "50%", filter: "blur(80px)", pointerEvents: "none",
         }} />
-        <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
+        <div className="landing-container" style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
           <h2 style={{
             fontSize: "clamp(28px, 4vw, 52px)",
             fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
@@ -924,8 +944,9 @@ export default function LandingPage() {
               Watch Agent Demo
             </button>
           </div>
-          <div style={{ display: "flex", gap: "10px", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
+          <div className="landing-cta-inputs" style={{ display: "flex", gap: "10px", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
             <input
+              className="landing-email-input"
               type="email"
               placeholder="Enter your email for agent updates"
               value={email}
@@ -949,7 +970,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer - Sarvam-inspired with scroll-triggered animated glow */}
-      <footer ref={footerRef} style={{
+      <footer className="landing-footer" ref={footerRef} style={{
         position: "relative",
         overflow: "hidden",
         background: "hsl(220, 30%, 98%)",
@@ -988,14 +1009,14 @@ export default function LandingPage() {
           transformOrigin: "bottom center",
         }} />
 
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 60px", position: "relative", zIndex: 1 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "48px", marginBottom: "48px" }}>
-            <div>
+        <div className="landing-container landing-footer-container" style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: 0, paddingBottom: "60px", position: "relative", zIndex: 1 }}>
+          <div className="landing-footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "48px", marginBottom: "48px" }}>
+            <div className="landing-footer-brand">
               <h3 style={{ fontSize: "22px", fontWeight: "700", letterSpacing: "-0.5px", color: "#0f0f0f", margin: "0 0 10px" }}>SKYPay</h3>
               <p style={{ fontSize: "14px", color: "#888", lineHeight: 1.7, maxWidth: "240px", margin: "0 0 20px" }}>
                 Agentic payment infrastructure. Your AI handles all crypto payments automatically.
               </p>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div className="landing-footer-social" style={{ display: "flex", gap: "8px" }}>
                 {[Globe, Users, LinkIcon].map((Icon, i) => (
                   <button key={i} style={{
                     width: 36, height: 36, borderRadius: "8px",
@@ -1024,7 +1045,7 @@ export default function LandingPage() {
                 links: ["About SKYPay", "Agent Blog", "Careers", "Contact"],
               },
             ].map(({ title, links }) => (
-              <div key={title}>
+              <div className="landing-footer-col" key={title}>
                 <h4 style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#bbb", margin: "0 0 16px" }}>{title}</h4>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
                   {links.map((link) => (
@@ -1043,7 +1064,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div style={{
+          <div className="landing-footer-bottom" style={{
             borderTop: "1px solid rgba(0,0,0,0.06)",
             paddingTop: "24px",
             display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -1056,17 +1077,231 @@ export default function LandingPage() {
       </footer>
 
       <style>{`
+        .landing-shell {
+          width: 100%;
+          overflow-x: clip;
+        }
+
+        .landing-container {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+
+        .landing-notion-table-wrap {
+          overflow-x: auto;
+          scrollbar-width: thin;
+        }
+
+        .landing-footer {
+          scroll-margin-top: 84px;
+        }
+
+        .landing-footer-grid > * {
+          min-width: 0;
+        }
+
+        @media (min-width: 769px) and (max-width: 900px) {
+          .landing-notion-grid {
+            grid-template-columns: 1fr !important;
+            gap: 36px !important;
+          }
+
+          .landing-footer-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 26px !important;
+          }
+        }
+
         @media (max-width: 768px) {
           .nav-links-desktop { display: none !important; }
-        }
-        @media (max-width: 900px) {
-          section > div > div[style*="grid-template-columns: 1fr 1fr"] {
+
+          .landing-nav-wrap {
+            width: calc(100% - 16px) !important;
+            top: 10px !important;
+          }
+
+          .landing-nav {
+            height: 52px !important;
+            padding: 0 4px 0 12px !important;
+            border-radius: 999px !important;
+          }
+
+          .landing-logo-row {
+            gap: 12px !important;
+            min-width: 0;
+          }
+
+          .landing-auth-actions {
+            gap: 4px !important;
+          }
+
+          .landing-signin-btn {
+            padding: 6px 10px !important;
+            font-size: 12px !important;
+          }
+
+          .landing-getstarted-btn {
+            padding: 8px 14px !important;
+            font-size: 12px !important;
+          }
+
+          .landing-section {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+
+          .landing-container {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+
+          .landing-hero {
+            padding-top: 94px !important;
+            min-height: auto !important;
+          }
+
+          .landing-hero-title {
+            font-size: clamp(48px, 16vw, 58px) !important;
+            line-height: 1.02 !important;
+          }
+
+          .landing-hero-copy {
+            font-size: 16px !important;
+            margin-bottom: 28px !important;
+          }
+
+          .landing-demo-wrap {
+            margin-top: 34px !important;
+          }
+
+          .landing-demo-shell {
+            border-radius: 16px !important;
+          }
+
+          .landing-demo-grid {
             grid-template-columns: 1fr !important;
           }
-          footer > div > div[style*="grid-template-columns: 2fr"] {
-            grid-template-columns: 1fr 1fr !important;
+
+          .landing-demo-col {
+            padding: 16px !important;
+          }
+
+          .landing-demo-col-left {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(15,23,42,0.06) !important;
+          }
+
+          .landing-demo-metrics {
+            gap: 6px !important;
+          }
+
+          .landing-how-grid,
+          .landing-features-grid,
+          .landing-pricing-grid,
+          .landing-footer-grid {
+            grid-template-columns: 1fr !important;
+            gap: 18px !important;
+          }
+
+          .landing-footer-grid {
+            margin-bottom: 28px !important;
+          }
+
+          .landing-footer {
+            padding-top: 48px !important;
+          }
+
+          .landing-footer-brand {
+            text-align: left;
+          }
+
+          .landing-footer-brand h3 {
+            font-size: 28px !important;
+            margin-bottom: 8px !important;
+          }
+
+          .landing-footer-brand p {
+            max-width: none !important;
+            font-size: 15px !important;
+            color: #707684 !important;
+            line-height: 1.6 !important;
+          }
+
+          .landing-footer-social {
+            justify-content: flex-start;
+          }
+
+          .landing-footer-col h4 {
+            margin-bottom: 10px !important;
+          }
+
+          .landing-footer-bottom {
+            padding-top: 18px !important;
+            gap: 6px !important;
+            align-items: flex-start !important;
+          }
+
+          .landing-footer-bottom p {
+            font-size: 12px !important;
+            line-height: 1.5 !important;
+          }
+
+          .landing-notion-table-wrap {
+            overflow: visible !important;
+          }
+
+          .landing-table-head {
+            display: none !important;
+          }
+
+          .landing-table-row {
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            gap: 8px 10px !important;
+            min-width: 0 !important;
+            padding: 10px 12px !important;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0,0,0,0.06) !important;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.86);
+          }
+
+          .landing-cell-client {
+            font-size: 15px !important;
+            line-height: 1.2 !important;
+          }
+
+          .landing-cell-amount {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: #374151 !important;
+            justify-self: end;
+          }
+
+          .landing-cell-status {
+            grid-column: 1 / -1;
+            justify-self: start;
+          }
+
+          .landing-table-action {
+            display: none !important;
+          }
+
+          .landing-notion-grid {
+            grid-template-columns: 1fr !important;
+            gap: 26px !important;
+          }
+
+          .landing-cta-inputs {
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+
+          .landing-email-input,
+          .landing-cta-inputs button {
+            width: 100% !important;
           }
         }
+
         @keyframes footerGlowPulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.75; }
