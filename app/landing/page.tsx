@@ -1,51 +1,104 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
+import Link from "next/link"
 import {
   ArrowRight,
-  CheckCircle,
-  Database,
-  Globe,
-  MessageSquare,
-  Zap,
-  Users,
-  Bot,
-  LinkIcon,
+  BarChart3,
   Calendar,
-  Send,
-  RefreshCw,
-  Bell,
-  Sparkles,
+  Check,
+  ChevronDown,
+  Clock3,
+  Code2,
+  CreditCard,
+  Globe,
+  Github,
   LayoutDashboard,
+  Lock,
   Menu,
+  Repeat,
+  Route,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  TrendingUp,
+  Twitter,
+  Users,
+  Linkedin,
   X,
+  Zap,
 } from "lucide-react"
-import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 
-export default function LandingPage() {
-  const [email, setEmail] = useState("")
-  const { isAuthenticated, user, isLoading } = useAuth()
-  const [footerVisible, setFooterVisible] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const footerRef = useRef<HTMLElement>(null)
+type Feature = {
+  title: string
+  description: string
+  icon: typeof Globe
+}
 
-  // Scroll-triggered reveal animations
+type Step = {
+  title: string
+  description: string
+  icon: typeof Route
+}
+
+type PricingPlan = {
+  name: string
+  price: string
+  description: string
+  features: string[]
+  featured?: boolean
+}
+
+const features: Feature[] = [
+  { title: "Global Payments", description: "Accept money from 150+ countries with smart routing and local payment options.", icon: Globe },
+  { title: "Bank-Grade Security", description: "Encryption, fraud controls, and account protections designed for finance teams.", icon: ShieldCheck },
+  { title: "Instant Transfers", description: "Move funds in seconds, track every event, and keep your treasury moving.", icon: Zap },
+  { title: "Developer-First API", description: "Ship quickly with clean endpoints, webhooks, and docs that stay out of your way.", icon: Code2 },
+  { title: "Smart Analytics", description: "See volume, conversion, and settlement trends in one calm dashboard.", icon: BarChart3 },
+  { title: "Recurring Billing", description: "Automate subscription flows, retries, and reminders without manual overhead.", icon: Repeat },
+]
+
+const steps: Step[] = [
+  { title: "Create Account", description: "Sign up in minutes and verify your business with guided onboarding.", icon: Users },
+  { title: "Connect & Configure", description: "Link your bank, set payment rules, and choose how money should move.", icon: Route },
+  { title: "Start Transacting", description: "Launch with confidence and monitor activity from a single place.", icon: ArrowRight },
+]
+
+const pricingPlans: PricingPlan[] = [
+  { name: "Starter", price: "$0", description: "For testing and small projects.", features: ["Up to 100 transactions/month", "5 payment methods", "Basic analytics", "Email support"] },
+  { name: "Pro", price: "$49", description: "For growing businesses that need more.", featured: true, features: ["Unlimited transactions", "All payment methods", "Advanced analytics", "Priority support", "Custom branding"] },
+  { name: "Enterprise", price: "Custom", description: "For large organizations with custom needs.", features: ["Volume discounts", "Dedicated manager", "Custom integrations", "SLA guarantees", "24/7 phone support"] },
+]
+
+const testimonials = [
+  { name: "Sarah Chen", role: "CFO, TechFlow Inc", quote: "SkyPay transformed our international payments. What used to take days now settles quickly, and our cash flow is easier to manage." },
+  { name: "Marcus Rivera", role: "CTO, Quantum SaaS", quote: "The API experience is excellent. We integrated the flow in an afternoon and the documentation made the entire build feel lighter." },
+  { name: "Emily Watson", role: "VP Finance, Orbitex", quote: "Transparent pricing removed a lot of friction. We know exactly what we pay and where every cost comes from." },
+]
+
+const trustedLogos = ["TechFlow", "NovaPay", "Quantum", "Orbitex", "NeoBank", "Fusion", "Helix"]
+
+export default function LandingPage() {
+  const { isAuthenticated, user, isLoading } = useAuth()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   useEffect(() => {
-    const els = document.querySelectorAll('[data-animate]')
-    const io = new IntersectionObserver(
+    const elements = document.querySelectorAll("[data-reveal]")
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('in-view')
-            io.unobserve(entry.target)
+            entry.target.classList.add("is-visible")
+            observer.unobserve(entry.target)
           }
         })
       },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
     )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+
+    elements.forEach((element) => observer.observe(element))
+    return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
@@ -61,1172 +114,518 @@ export default function LandingPage() {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [mobileMenuOpen])
 
-  // Footer glow observer
   useEffect(() => {
+    const counters = document.querySelectorAll("[data-count]")
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setFooterVisible(true)
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+
+          const target = entry.target as HTMLElement
+          const value = Number(target.dataset.count || "0")
+          const start = performance.now()
+          const duration = 1800
+
+          const tick = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            target.textContent = String(Math.round(value * eased))
+
+            if (progress < 1) {
+              requestAnimationFrame(tick)
+            }
+          }
+
+          requestAnimationFrame(tick)
+          observer.unobserve(target)
+        })
       },
-      { threshold: 0.05 }
+      { threshold: 0.5 }
     )
-    if (footerRef.current) observer.observe(footerRef.current)
+
+    counters.forEach((counter) => observer.observe(counter))
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    const nav = document.getElementById("navbar")
+    if (!nav) return
+
+    const onScroll = () => {
+      nav.dataset.scrolled = window.scrollY > 30 ? "true" : "false"
+    }
+
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  const navLinks = [
+    { label: "Features", href: "#features" },
+    { label: "How It Works", href: "#how-it-works" },
+    { label: "Pricing", href: "#pricing" },
+    { label: "Testimonials", href: "#testimonials" },
+  ]
+
+  const ctaHref = isAuthenticated ? "/dashboard" : "/auth/login"
+  const ctaLabel = isAuthenticated ? "Open Dashboard" : "Get Started"
 
   return (
-    <div className="min-h-screen landing-shell" style={{ background: "hsl(220, 30%, 98%)", fontFamily: "var(--font-inter), 'Inter', sans-serif" }}>
-
-      {/* Navigation */}
-      {/* Floating Glassmorphism Navbar */}
-      <div className="landing-nav-wrap" style={{
-        position: "fixed",
-        top: "18px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 100,
-        width: "calc(100% - 48px)",
-        maxWidth: "900px",
-      }}>
-        <nav className="landing-nav" style={{
-          background: "rgba(255, 255, 255, 0.6)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
-          borderRadius: "100px",
-          border: "1px solid rgba(255, 255, 255, 0.9)",
-          boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255,255,255,0.8)",
-          padding: "0 6px 0 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          height: "56px",
-        }}>
-          {/* Logo + Nav Links */}
-          <div className="landing-logo-row" style={{ display: "flex", alignItems: "center", gap: "32px" }}>
-            <Link href="/landing#hero" style={{ textDecoration: "none" }}>
-              <h1 style={{
-                fontSize: "22px", fontWeight: "600",
-                letterSpacing: "0.01em", color: "#0f0f0f", margin: 0,
-                fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-                fontStyle: "italic",
-                lineHeight: 1,
-                cursor: "pointer",
-              }}>
-                SKYPay
-              </h1>
+    <main style={{ color: 'var(--foreground)' }} className="min-h-screen overflow-x-hidden">
+      <nav id="navbar" className="fixed left-0 right-0 top-0 z-50 transition-all duration-300" data-scrolled="false">
+        <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 sm:pt-5 lg:px-8">
+          <div className="flex h-16 items-center justify-between rounded-full border border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40 px-4 shadow-[0_12px_40px_rgba(99,102,241,0.05)] backdrop-blur-xl sm:px-5">
+            <Link href="/landing#hero" className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--brand-strong)] via-[var(--brand)] to-[var(--brand-dark)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.2)]">
+                <Zap className="h-5 w-5" />
+              </div>
+              <span className="text-lg font-semibold tracking-tight sm:text-xl">
+                SKY<span className="font-cormorant italic text-[var(--brand)]">Pay</span>
+              </span>
             </Link>
-            <div style={{ display: "flex", gap: "2px", alignItems: "center" }} className="nav-links-desktop">
-              {["Features", "Pricing", "Docs"].map((item) => (
-                <a
-                  key={item}
-                  href={item === "Docs" ? "/docs" : `#${item.toLowerCase()}`}
-                  style={{
-                    color: "#555",
-                    textDecoration: "none",
-                    padding: "5px 12px",
-                    borderRadius: "100px",
-                    fontSize: "12.5px",
-                    fontWeight: "500",
-                    letterSpacing: "0.03em",
-                    textTransform: "uppercase",
-                    transition: "color 0.2s, background 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.color = "#0f0f0f";
-                    (e.target as HTMLElement).style.background = "rgba(0,0,0,0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLElement).style.color = "#555";
-                    (e.target as HTMLElement).style.background = "transparent";
-                  }}
-                >
-                  {item}
+
+            <div className="hidden items-center gap-2 lg:flex">
+              {navLinks.map((link) => (
+                <a key={link.label} href={link.href} className="rounded-full px-4 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-black/5 hover:text-[var(--foreground)]">
+                  {link.label}
                 </a>
               ))}
-            </div>
-          </div>
-
-          {/* Auth Buttons */}
-          <div className="landing-auth-actions" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            {!isLoading && (
-              <>
-                {isAuthenticated && user ? (
-                  <>
-                    <span style={{ fontSize: "12px", color: "#666", paddingRight: "8px" }}>
-                      Welcome, {user.name || user.email}
-                    </span>
-                    <Link href="/dashboard" style={{
-                      display: "flex", alignItems: "center", gap: "6px",
-                      padding: "8px 16px", borderRadius: "100px",
-                      background: "#0f0f0f", color: "#fff",
-                      textDecoration: "none", fontSize: "12.5px", fontWeight: "600",
-                      transition: "opacity 0.2s",
-                    }}>
-                      <LayoutDashboard size={13} />
-                      Dashboard
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/auth/login" className="landing-signin-btn" style={{
-                      color: "#555", textDecoration: "none",
-                      padding: "8px 14px", borderRadius: "100px",
-                      fontSize: "12.5px", fontWeight: "500",
-                      transition: "color 0.2s, background 0.2s",
-                    }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.05)";
-                        (e.currentTarget as HTMLElement).style.color = "#0f0f0f";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = "transparent";
-                        (e.currentTarget as HTMLElement).style.color = "#555";
-                      }}
-                    >
-                      Sign In
-                    </Link>
-                    <Link href="/auth/login" className="landing-getstarted-btn" style={{
-                      display: "inline-flex", alignItems: "center",
-                      padding: "8px 18px", borderRadius: "100px",
-                      background: "linear-gradient(140deg, #2f2118 0%, #1f1611 100%)", color: "#fdf7ef",
-                      textDecoration: "none", fontSize: "12.5px", fontWeight: "600",
-                      boxShadow: "0 4px 12px rgba(31,22,17,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
-                      transition: "transform 0.15s, box-shadow 0.15s",
-                    }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.transform = "scale(1.03)";
-                        (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 18px rgba(31,22,17,0.36), inset 0 1px 0 rgba(255,255,255,0.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-                        (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(31,22,17,0.28), inset 0 1px 0 rgba(255,255,255,0.08)";
-                      }}
-                    >
-                      Get Started
-                    </Link>
-                  </>
-                )}
-              </>
-            )}
-            <button
-              type="button"
-              className="landing-mobile-menu-toggle"
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileMenuOpen}
-              aria-controls="landing-mobile-menu"
-              style={{
-                width: "34px",
-                height: "34px",
-                borderRadius: "10px",
-                border: mobileMenuOpen ? "1px solid rgba(49,35,26,0.28)" : "1px solid rgba(49,35,26,0.15)",
-                background: mobileMenuOpen
-                  ? "linear-gradient(140deg, rgba(255,255,255,0.88) 0%, rgba(245,232,220,0.92) 100%)"
-                  : "rgba(252,245,237,0.82)",
-                color: "#2f2118",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-              }}
-            >
-              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
-            </button>
-          </div>
-        </nav>
-
-        {mobileMenuOpen && (
-          <div
-            id="landing-mobile-menu"
-            className="landing-mobile-menu-panel"
-            role="menu"
-            aria-label="Mobile navigation"
-            style={{
-              marginTop: "6px",
-              marginLeft: "0",
-              borderRadius: "14px",
-              border: "1px solid rgba(255,255,255,0.3)",
-              background: "linear-gradient(155deg, rgba(255,255,255,0.46) 0%, rgba(250,239,228,0.38) 46%, rgba(240,228,216,0.34) 100%)",
-              backdropFilter: "blur(16px) saturate(180%)",
-              WebkitBackdropFilter: "blur(16px) saturate(180%)",
-              boxShadow: "0 12px 30px rgba(62,38,22,0.14), inset 0 1px 0 rgba(255,255,255,0.52)",
-              padding: "10px",
-              width: "100%",
-              maxWidth: "none",
-              boxSizing: "border-box",
-              overflow: "hidden",
-              transformOrigin: "top right",
-              animation: "menuSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1)",
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <a
-                href="#features"
-                onClick={() => setMobileMenuOpen(false)}
-                role="menuitem"
-                className="landing-mobile-menu-link"
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "right",
-                  padding: "10px 14px",
-                  borderRadius: "10px",
-                  color: "#2f2118",
-                  background: "rgba(255,255,255,0.28)",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  lineHeight: 1.2,
-                  textShadow: "0 1px 2px rgba(255,255,255,0.42)",
-                  transition: "transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
-                  animation: "menuItemSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.03s both",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.42)";
-                  e.currentTarget.style.transform = "translateX(-2px)";
-                  e.currentTarget.style.boxShadow = "0 6px 14px rgba(62,38,22,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.28)";
-                  e.currentTarget.style.transform = "translateX(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                Features
-              </a>
-              <a
-                href="#pricing"
-                onClick={() => setMobileMenuOpen(false)}
-                role="menuitem"
-                className="landing-mobile-menu-link"
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "right",
-                  padding: "10px 14px",
-                  borderRadius: "10px",
-                  color: "#2f2118",
-                  background: "rgba(255,255,255,0.28)",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  lineHeight: 1.2,
-                  textShadow: "0 1px 2px rgba(255,255,255,0.42)",
-                  transition: "transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
-                  animation: "menuItemSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.42)";
-                  e.currentTarget.style.transform = "translateX(-2px)";
-                  e.currentTarget.style.boxShadow = "0 6px 14px rgba(62,38,22,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.28)";
-                  e.currentTarget.style.transform = "translateX(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                Pricing
-              </a>
-              <Link
-                href="/docs"
-                onClick={() => setMobileMenuOpen(false)}
-                role="menuitem"
-                className="landing-mobile-menu-link"
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "right",
-                  padding: "10px 14px",
-                  borderRadius: "10px",
-                  color: "#2f2118",
-                  background: "rgba(255,255,255,0.28)",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  lineHeight: 1.2,
-                  textShadow: "0 1px 2px rgba(255,255,255,0.42)",
-                  transition: "transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
-                  animation: "menuItemSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.13s both",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.42)";
-                  e.currentTarget.style.transform = "translateX(-2px)";
-                  e.currentTarget.style.boxShadow = "0 6px 14px rgba(62,38,22,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.28)";
-                  e.currentTarget.style.transform = "translateX(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
+              <Link href="/docs" className="rounded-full px-4 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-black/5 hover:text-[var(--foreground)]">
                 Docs
               </Link>
             </div>
+
+            <div className="hidden items-center gap-3 md:flex">
+              {!isLoading && isAuthenticated && user ? (
+                <>
+                  <span className="hidden text-sm text-[var(--muted-foreground)] xl:inline">Welcome, {user.name || user.email}</span>
+                  <Link href="/dashboard" className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-[var(--primary-foreground)] shadow-[0_10px_24px_rgba(15,23,42,0.15)] transition-transform hover:-translate-y-0.5">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login" className="rounded-full px-4 py-2 text-sm font-medium text-[var(--muted-foreground)] transition-colors hover:bg-black/5 hover:text-[var(--foreground)]">
+                    Sign In
+                  </Link>
+                  <Link href={ctaHref} className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-[var(--primary)] to-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-[var(--primary-foreground)] shadow-[0_10px_24px_rgba(15,23,42,0.15)] transition-transform hover:-translate-y-0.5">
+                    {ctaLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </>
+              )}
+            </div>
+
+              <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/50 text-[var(--primary)] transition-colors hover:bg-black/5 lg:hidden"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
-        )}
-      </div>
+        </div>
 
+            <div id="mobile-menu" className={`lg:hidden fixed inset-0 z-40 bg-[color:var(--primary)]/95 px-4 pt-24 transition-all duration-300 ${mobileMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}>
+            <div className="mx-auto flex max-w-md flex-col gap-3 rounded-4xl border border-white/10 bg-white/5 p-5 backdrop-blur-2xl">
+            {navLinks.map((link) => (
+              <a key={link.label} href={link.href} onClick={() => setMobileMenuOpen(false)} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-lg font-semibold text-[var(--surface-light)] transition-colors hover:bg-white/10">
+                {link.label}
+              </a>
+            ))}
+            <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-lg font-semibold text-[var(--surface-light)] transition-colors hover:bg-white/10">
+              Docs
+            </Link>
+            <Link href={ctaHref} onClick={() => setMobileMenuOpen(false)} className="mt-2 inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-[var(--brand-strong)] to-[var(--brand)] px-4 py-4 text-base font-semibold text-white">
+              {ctaLabel}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </nav>
 
-      {/* Hero Section */}
-      <section id="hero" className="landing-section landing-hero" style={{
-        position: "relative",
-        overflow: "hidden",
-        paddingTop: "120px",
-        paddingBottom: "40px",
-        minHeight: "90vh",
-        display: "flex",
-        alignItems: "center",
-      }}>
-        {/* Top atmospheric gradient similar to the Sarvam-style hero */}
-        <div style={{
-          position: "absolute",
-          inset: "0 0 auto 0",
-          height: "62vh",
-          background: "linear-gradient(180deg, rgba(255, 232, 204, 0.85) 0%, rgba(255, 240, 222, 0.55) 26%, rgba(242, 236, 255, 0.35) 52%, rgba(220, 239, 255, 0.22) 72%, rgba(220, 239, 255, 0) 100%)",
-          pointerEvents: "none",
-        }} />
+      <section id="hero" className="relative flex min-h-screen items-center overflow-hidden pt-28 lg:pt-32">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.15),transparent_30%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.12),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.15),transparent_28%)]" />
+        <div className="pointer-events-none absolute -left-28 top-0 h-104 w-104 rounded-full bg-indigo-500/12 blur-3xl animate-[float_10s_ease-in-out_infinite]" />
+        <div className="pointer-events-none absolute -right-24 top-24 h-88 w-88 rounded-full bg-sky-400/10 blur-3xl animate-[float_12s_ease-in-out_infinite]" />
+        <div className="pointer-events-none absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-purple-500/8 blur-3xl animate-[float_14s_ease-in-out_infinite]" />
 
-        <div style={{
-          position: "absolute", top: "-170px", left: "50%", transform: "translateX(-50%)",
-          width: "860px", height: "460px",
-          background: "radial-gradient(ellipse, rgba(251, 146, 60, 0.46) 0%, rgba(251, 146, 60, 0.24) 30%, rgba(167, 139, 250, 0.22) 55%, rgba(125, 211, 252, 0.14) 70%, transparent 84%)",
-          borderRadius: "50%",
-          filter: "blur(56px)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute", top: "4%", left: "4%",
-          width: "450px", height: "320px",
-          background: "radial-gradient(ellipse, rgba(251, 146, 60, 0.22) 0%, rgba(249, 115, 22, 0.12) 35%, transparent 72%)",
-          borderRadius: "50%",
-          filter: "blur(80px)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute", top: "3%", right: "4%",
-          width: "430px", height: "310px",
-          background: "radial-gradient(ellipse, rgba(96, 165, 250, 0.22) 0%, rgba(167, 139, 250, 0.14) 45%, transparent 74%)",
-          borderRadius: "50%",
-          filter: "blur(80px)",
-          pointerEvents: "none",
-        }} />
-
-        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: 0, paddingBottom: 0, width: "100%", position: "relative", zIndex: 1 }}>
-          <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
-            {/* Decorative ornament */}
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: "28px" }}>
-              <span style={{ fontSize: "20px", letterSpacing: "8px", color: "#ccc" }}>✦ ✦ ✦</span>
+        <div className="mx-auto grid w-full max-w-7xl gap-16 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <div className="text-center lg:text-left">
+            {/* Scroll ornament flourish */}
+            <div className="mb-6 hidden lg:flex justify-start">
+              <svg className="w-24 h-6 text-slate-300 dark:text-slate-700" viewBox="0 0 100 20" fill="currentColor">
+                <path d="M50,15 C40,15 35,5 20,5 C10,5 5,12 5,15 C5,18 8,18 10,18 C15,18 18,12 25,12 C35,12 40,18 50,18 C60,18 65,12 75,12 C82,12 85,18 90,18 C92,18 95,18 95,15 C95,12 90,5 80,5 C65,5 60,15 50,15 Z" />
+                <circle cx="50" cy="10" r="1.5" />
+              </svg>
             </div>
 
-            {/* Badge */}
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "24px" }}>
-              <span style={{
-                padding: "6px 16px",
-                border: "1px solid rgba(0,0,0,0.12)",
-                borderRadius: "100px",
-                fontSize: "12px",
-                color: "#444",
-                background: "rgba(255,255,255,0.8)",
-                letterSpacing: "0.02em",
-              }}>
-                Agentic Payment Infrastructure
-              </span>
+            <div data-reveal className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20 px-4 py-1.5 text-xs font-semibold tracking-wide text-slate-700 dark:text-slate-300 opacity-0 transition-all duration-700 lg:mx-0">
+              Global Agentic Payment Infrastructure
             </div>
 
-            <h1 className="landing-hero-title" style={{
-              fontSize: "clamp(46px, 7vw, 88px)",
-              fontWeight: "600",
-              letterSpacing: "-1px",
-              lineHeight: 1.05,
-              color: "#0f0f0f",
-              margin: "0 0 24px 0",
-              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-              fontStyle: "italic",
-            }}>
-              Your AI agent handles
-              <br />
-              <span style={{ color: "#0f0f0f", fontStyle: "normal" }}>all crypto payments</span>
+            <h1 data-reveal className="font-cormorant text-5xl font-semibold leading-[1.05] tracking-[-0.02em] opacity-0 transition-all duration-700 sm:text-6xl lg:text-7xl xl:text-8xl text-slate-900 dark:text-white">
+              Payments<br />
+              <span className="italic font-normal">Without Borders</span>
             </h1>
 
-            <p className="landing-hero-copy" style={{
-              fontSize: "18px",
-              color: "#555",
-              lineHeight: 1.7,
-              maxWidth: "560px",
-              margin: "0 auto 40px",
-            }}>
-              SKYPay is the first agentic payment infrastructure. An AI agent that automatically schedules, sends,
-              receives, and manages all your crypto payments. Powered by X402Pay &amp; Notion.
+            <p data-reveal className="mx-auto mt-6 max-w-xl text-lg leading-8 text-slate-600 dark:text-slate-400 opacity-0 transition-all duration-700 sm:text-xl lg:mx-0">
+              Built on agentic infrastructure. Powered by Notion databases. Delivering population-scale payment orchestration for modern global teams.
             </p>
 
-            <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/auth/login" style={{
-                display: "inline-flex", alignItems: "center", gap: "8px",
-                padding: "14px 28px", borderRadius: "100px",
-                background: "#0f0f0f", color: "#fff",
-                textDecoration: "none", fontSize: "15px", fontWeight: "600",
-                transition: "transform 0.2s, box-shadow 0.2s",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-              }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)" }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.15)" }}
-              >
-                Start Your Agent Free
-                <ArrowRight size={16} />
+            <div data-reveal className="mt-10 flex flex-col justify-center gap-4 opacity-0 transition-all duration-700 sm:flex-row lg:justify-start">
+              <Link href={ctaHref} className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-3.5 text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors shadow-md">
+                {isAuthenticated ? "Open Dashboard" : "Start for Free"}
+                <ArrowRight className="h-4 w-4" />
               </Link>
-              <button style={{
-                display: "inline-flex", alignItems: "center", gap: "8px",
-                padding: "14px 28px", borderRadius: "100px",
-                background: "rgba(255,255,255,0.9)", color: "#333",
-                border: "1px solid rgba(0,0,0,0.1)",
-                fontSize: "15px", fontWeight: "500", cursor: "pointer",
-                transition: "background 0.2s",
-              }}>
-                Watch Demo
-              </button>
+              <a href="#how-it-works" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 dark:border-slate-700 bg-white/40 dark:bg-black/40 text-slate-700 dark:text-slate-300 px-8 py-3.5 text-sm font-semibold hover:bg-white/60 dark:hover:bg-black/60 transition-colors backdrop-blur-md">
+                Watch Agent Demo
+              </a>
             </div>
-            <p style={{ fontSize: "13px", color: "#888", marginTop: "20px" }}>
-              Connect your Notion • Agent handles the rest • Powered by X402Pay
-            </p>
-          </div>
 
-          {/* Hero Demo Card */}
-          <div className="landing-demo-wrap" style={{ marginTop: "60px" }}>
-            <div className="landing-demo-shell" style={{
-              background: "linear-gradient(145deg, rgba(255,255,255,0.94) 0%, rgba(250,252,255,0.92) 52%, rgba(255,248,238,0.92) 100%)",
-              borderRadius: "24px",
-              border: "1px solid rgba(17,24,39,0.08)",
-              boxShadow: "0 24px 90px rgba(15,23,42,0.08), 0 8px 30px rgba(15,23,42,0.06)",
-              overflow: "hidden",
-              backdropFilter: "blur(12px)",
-            }}>
-              {/* Window bar */}
-              <div style={{
-                background: "rgba(247,249,255,0.9)",
-                padding: "12px 20px",
-                borderBottom: "1px solid rgba(15,23,42,0.06)",
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ffbd2e" }} />
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#28ca41" }} />
-                  <span style={{ fontSize: "12px", color: "#7b8190", marginLeft: "8px" }}>SKYPay Agent • Live Workspace</span>
-                </div>
-                <div style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "5px 10px",
-                  borderRadius: "999px",
-                  background: "rgba(34,197,94,0.1)",
-                  color: "#15803d",
-                  fontSize: "11px",
-                  fontWeight: "600",
-                }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
-                  Sync Healthy
-                </div>
+            <div data-reveal className="mt-12 flex flex-wrap items-center justify-center gap-8 opacity-0 transition-all duration-700 lg:justify-start">
+              <div>
+                <div className="text-3xl font-semibold tracking-tight">$2B+</div>
+                <div className="text-sm text-[var(--muted-2)]">Processed Monthly</div>
               </div>
-
-              <div className="landing-demo-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)" }}>
-                {/* Notion Side */}
-                <div className="landing-demo-col landing-demo-col-left" style={{ padding: "28px", borderRight: "1px solid rgba(15,23,42,0.06)", background: "rgba(255,255,255,0.55)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-                    <Database size={20} color="#333" />
-                    <span style={{ fontWeight: "600", fontSize: "14px" }}>Your Notion Database</span>
-                  </div>
-                  <div className="landing-demo-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px", marginBottom: "16px" }}>
-                    {[
-                      { label: "Open", value: "12" },
-                      { label: "Paid", value: "84" },
-                      { label: "Recovered", value: "91%" },
-                    ].map((metric) => (
-                      <div key={metric.label} style={{
-                        borderRadius: "12px",
-                        border: "1px solid rgba(15,23,42,0.06)",
-                        background: "rgba(248,250,255,0.9)",
-                        padding: "10px 12px",
-                      }}>
-                        <p style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "#8d94a5", margin: "0 0 4px" }}>{metric.label}</p>
-                        <p style={{ fontSize: "16px", fontWeight: "700", color: "#0f172a", margin: 0 }}>{metric.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {[
-                      { name: "Acme Corp Invoice", sub: "Due: Tomorrow • 0.15 ETH", badge: "Pending", badgeColor: "#d97706", badgeBg: "rgba(245,158,11,0.14)" },
-                      { name: "Monthly Subscription", sub: "Auto-renew: Jan 15 • 120 USDC", badge: "Scheduled", badgeColor: "#2563eb", badgeBg: "rgba(59,130,246,0.12)" },
-                      { name: "Design Retainer", sub: "Reminder in 4h • 0.42 ETH", badge: "Follow-up", badgeColor: "#9333ea", badgeBg: "rgba(147,51,234,0.11)" },
-                    ].map((item) => (
-                      <div key={item.name} style={{
-                        background: "rgba(248,249,255,0.86)",
-                        borderRadius: "14px", padding: "13px 16px",
-                        display: "flex", justifyContent: "space-between", alignItems: "center",
-                        border: "1px solid rgba(15,23,42,0.05)",
-                      }}>
-                        <div>
-                          <p style={{ fontWeight: "500", fontSize: "13px", margin: "0 0 2px" }}>{item.name}</p>
-                          <p style={{ fontSize: "11px", color: "#888", margin: 0 }}>{item.sub}</p>
-                        </div>
-                        <span style={{
-                          padding: "3px 10px", borderRadius: "100px",
-                          fontSize: "11px", fontWeight: "600",
-                          color: item.badgeColor, background: item.badgeBg,
-                        }}>{item.badge}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Agent Side */}
-                <div className="landing-demo-col" style={{ padding: "28px", background: "linear-gradient(165deg, rgba(255,255,255,0.42) 0%, rgba(240,247,255,0.62) 100%)" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginBottom: "18px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Bot size={20} color="#6366f1" />
-                    <span style={{ fontWeight: "600", fontSize: "14px" }}>SKYPay Agent</span>
-                    <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#22c55e" }}>
-                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
-                      Active
-                    </span>
-                  </div>
-                    <span style={{ fontSize: "11px", fontWeight: "600", color: "#64748b" }}>Autonomous Mode</span>
-                  </div>
-
-                  <div style={{
-                    borderRadius: "14px",
-                    border: "1px solid rgba(99,102,241,0.16)",
-                    background: "linear-gradient(135deg, rgba(99,102,241,0.09) 0%, rgba(14,165,233,0.07) 100%)",
-                    padding: "12px 14px",
-                    marginBottom: "14px",
-                  }}>
-                    <p style={{ margin: "0 0 4px", fontSize: "11px", color: "#64748b", letterSpacing: "0.04em", textTransform: "uppercase" }}>Current instruction</p>
-                    <p style={{ margin: 0, fontSize: "13px", color: "#1e293b", fontWeight: "500" }}>
-                      &quot;Collect 0.15 ETH from Acme Corp, auto-refund after 30 days, then mark paid in Notion.&quot;
-                    </p>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    {[
-                      { Icon: Send, color: "#6366f1", title: "Invoice delivered with dynamic pay-link", sub: "X402Pay + email personalization • 2 min ago" },
-                      { Icon: Calendar, color: "#8b5cf6", title: "Refund and follow-up workflow armed", sub: "Auto refund on day 30 • 4 min ago" },
-                      { Icon: Bell, color: "#f97316", title: "Risk monitor flagged a late payer", sub: "Reminder queued with adaptive retry • 8 min ago" },
-                    ].map(({ Icon, color, title, sub }) => (
-                      <div key={title} style={{
-                        display: "flex", gap: "12px", alignItems: "flex-start",
-                        borderRadius: "12px",
-                        padding: "10px",
-                        border: "1px solid rgba(15,23,42,0.05)",
-                        background: "rgba(255,255,255,0.66)",
-                      }}>
-                        <div style={{
-                          width: 32, height: 32, borderRadius: "8px",
-                          background: `${color}15`,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          flexShrink: 0,
-                        }}>
-                          <Icon size={14} color={color} />
-                        </div>
-                        <div>
-                          <p style={{ fontWeight: "500", fontSize: "13px", margin: "0 0 2px" }}>{title}</p>
-                          <p style={{ fontSize: "11px", color: "#888", margin: 0 }}>{sub}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{
-                    marginTop: "14px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "10px",
-                  }}>
-                    <span style={{ fontSize: "11px", color: "#64748b" }}>Last sync: 12 seconds ago</span>
-                    <button style={{
-                      border: "1px solid rgba(15,23,42,0.1)",
-                      background: "rgba(255,255,255,0.9)",
-                      color: "#334155",
-                      borderRadius: "999px",
-                      padding: "6px 12px",
-                      fontSize: "11px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                    }}>
-                      View Agent Log
-                    </button>
-                  </div>
-                </div>
+              <div className="hidden h-10 w-px bg-black/10 sm:block" />
+              <div>
+                <div className="text-3xl font-semibold tracking-tight">150+</div>
+                <div className="text-sm text-[var(--muted-2)]">Currencies</div>
+              </div>
+              <div className="hidden h-10 w-px bg-black/10 sm:block" />
+              <div>
+                <div className="text-3xl font-semibold tracking-tight">99.9%</div>
+                <div className="text-sm text-[var(--muted-2)]">Uptime</div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Divider label - inspired by Sarvam "INDIA BUILDS WITH SARVAM" */}
-      <div style={{ textAlign: "center", padding: "28px 0 40px", borderTop: "1px solid rgba(0,0,0,0.05)" }}>
-        <span style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#aaa" }}>
-          BUILT ON SOVEREIGN INFRASTRUCTURE • POWERED BY X402PAY
-        </span>
-      </div>
-
-      {/* How It Works */}
-      <section className="landing-section" style={{ padding: "80px 0", background: "#fff" }}>
-        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <h2 style={{
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-              fontWeight: "700",
-              letterSpacing: "-1px",
-              color: "#0f0f0f",
-              margin: "0 0 16px",
-              lineHeight: 1.2,
-            }}>
-              Set it up once,<br />agent handles everything
-            </h2>
-            <p style={{ fontSize: "16px", color: "#666", maxWidth: "520px", margin: "0 auto", lineHeight: 1.7 }}>
-              Connect your Notion workspace and let SKYPay&apos;s AI agent automate your entire crypto payment workflow.
-            </p>
-          </div>
-
-          <div className="landing-how-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-            {[
-              {
-                num: "01",
-                icon: Database,
-                color: "#6366f1",
-                bg: "rgba(99,102,241,0.08)",
-                title: "Connect Notion",
-                desc: "Link your existing Notion database or use our template. Your payment data stays in Notion where you already work.",
-              },
-              {
-                num: "02",
-                icon: Bot,
-                color: "#8b5cf6",
-                bg: "rgba(139,92,246,0.08)",
-                title: "Agent Activates",
-                desc: "SKYPay AI monitors your Notion database 24/7, automatically creating invoices, scheduling payments, and handling follow-ups.",
-              },
-              {
-                num: "03",
-                icon: Zap,
-                color: "#f97316",
-                bg: "rgba(249,115,22,0.08)",
-                title: "Payments Flow",
-                desc: "X402Pay processes all crypto transactions while your agent handles scheduling, reminders, refunds, and updates your Notion automatically.",
-              },
-            ].map(({ num, icon: Icon, color, bg, title, desc }) => (
-              <div key={num} style={{
-                background: "rgba(248,249,252,0.6)",
-                borderRadius: "20px",
-                padding: "36px 28px",
-                border: "1px solid rgba(0,0,0,0.05)",
-                textAlign: "center",
-                transition: "transform 0.2s, box-shadow 0.2s",
-              }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 40px rgba(0,0,0,0.08)" }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.boxShadow = "none" }}
-              >
-                <div style={{
-                  width: 60, height: 60, borderRadius: "16px",
-                  background: bg,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  margin: "0 auto 20px",
-                }}>
-                  <Icon size={28} color={color} />
+          <div className="hidden items-center justify-center lg:flex">
+            <div className="relative w-full max-w-[520px]">
+              <div className="absolute -left-6 top-16 rounded-3xl border border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40 p-4 shadow-[0_18px_40px_rgba(99,102,241,0.05)] backdrop-blur-xl animate-[float_9s_ease-in-out_infinite]">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600">
+                    <TrendingUp className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-[var(--muted-2)]">Received</div>
+                    <div className="text-sm font-semibold">+$4,250.00</div>
+                  </div>
                 </div>
-                <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.1em", color: "#bbb", marginBottom: "8px", textTransform: "uppercase" }}>{num}</p>
-                <h3 style={{ fontWeight: "700", fontSize: "18px", color: "#0f0f0f", margin: "0 0 12px" }}>{title}</h3>
-                <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, margin: 0 }}>{desc}</p>
+                <div className="mt-2 text-[11px] text-[var(--muted-3)]">2 minutes ago</div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section id="features" className="landing-section" style={{
-        padding: "80px 0",
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        {/* Background gradient blob */}
-        <div style={{
-          position: "absolute", bottom: "-200px", left: "50%", transform: "translateX(-50%)",
-          width: "800px", height: "500px",
-          background: "radial-gradient(ellipse, rgba(251, 146, 60, 0.15) 0%, rgba(196, 181, 253, 0.12) 45%, transparent 70%)",
-          borderRadius: "50%",
-          filter: "blur(80px)",
-          pointerEvents: "none",
-        }} />
-        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <h2 style={{
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-              fontWeight: "700",
-              letterSpacing: "-1px",
-              color: "#0f0f0f",
-              margin: "0 0 16px",
-              lineHeight: 1.2,
-            }}>
-              Your AI payment agent capabilities
-            </h2>
-            <p style={{ fontSize: "16px", color: "#666", maxWidth: "520px", margin: "0 auto", lineHeight: 1.7 }}>
-              SKYPay&apos;s agent doesn&apos;t just process payments—it manages your entire payment workflow intelligently.
-            </p>
-          </div>
-
-          <div className="landing-features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
-            {[
-              { Icon: Calendar, color: "#6366f1", title: "Automated Scheduling", desc: "Agent automatically schedules recurring payments, subscription renewals, and invoice due dates based on your Notion data." },
-              { Icon: Send, color: "#8b5cf6", title: "Smart Payment Sending", desc: "Create payment requests in Notion, agent instantly generates X402Pay links and sends them to clients with personalized messages." },
-              { Icon: Bell, color: "#22c55e", title: "Intelligent Follow-ups", desc: "Agent tracks payment status and automatically sends reminders, escalations, and thank you messages at the right time." },
-              { Icon: RefreshCw, color: "#ef4444", title: "Automatic Reconciliation", desc: "When payments are received, agent automatically updates your Notion database, marks invoices as paid, and triggers next actions." },
-              { Icon: MessageSquare, color: "#f97316", title: "Natural Language Control", desc: "Chat with your agent using plain English: \"Send invoice to Acme Corp for 0.15 ETH\" or \"Refund John's deposit.\"" },
-              { Icon: Sparkles, color: "#a855f7", title: "Workflow Automation", desc: "Agent learns your patterns and automates complex workflows like subscription management, refund processing, and client onboarding." },
-            ].map(({ Icon, color, title, desc }) => (
-              <div key={title} style={{
-                background: "rgba(255,255,255,0.85)",
-                borderRadius: "20px",
-                padding: "28px",
-                border: "1px solid rgba(0,0,0,0.06)",
-                boxShadow: "0 2px 16px rgba(0,0,0,0.04)",
-                transition: "transform 0.2s, box-shadow 0.2s",
-              }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 40px rgba(0,0,0,0.08)" }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 16px rgba(0,0,0,0.04)" }}
-              >
-                <div style={{
-                  width: 48, height: 48, borderRadius: "12px",
-                  background: `${color}15`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  marginBottom: "20px",
-                }}>
-                  <Icon size={22} color={color} />
-                </div>
-                <h3 style={{ fontWeight: "700", fontSize: "16px", color: "#0f0f0f", margin: "0 0 10px" }}>{title}</h3>
-                <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, margin: 0 }}>{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Notion Integration Showcase */}
-      <section className="landing-section" style={{ padding: "80px 0", background: "#fff" }}>
-        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div className="landing-notion-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
-            <div>
-              <h2 style={{
-                fontSize: "clamp(28px, 3.5vw, 44px)",
-                fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-                fontWeight: "700",
-                letterSpacing: "-1px",
-                color: "#0f0f0f",
-                margin: "0 0 20px",
-                lineHeight: 1.2,
-              }}>
-                Works natively with your Notion workspace
-              </h2>
-              <p style={{ fontSize: "16px", color: "#666", lineHeight: 1.7, marginBottom: "32px" }}>
-                No need to learn new tools. SKYPay&apos;s agent integrates seamlessly with your existing Notion databases,
-                turning them into powerful payment management systems.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "36px" }}>
-                {[
-                  "Create invoices directly in Notion",
-                  "Agent monitors database changes in real-time",
-                  "Automatic status updates and payment tracking",
-                  "Custom workflows based on your database structure",
-                ].map((item) => (
-                  <div key={item} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{
-                      width: 22, height: 22, borderRadius: "50%",
-                      background: "rgba(34,197,94,0.12)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0,
-                    }}>
-                      <CheckCircle size={13} color="#22c55e" />
+              <div className="rounded-4xl border border-white/20 bg-linear-to-br from-slate-900 to-indigo-950 p-8 text-[var(--on-dark)] shadow-[0_24px_80px_rgba(15,23,42,0.25)] backdrop-blur-lg">
+                <div className="mb-10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-[var(--brand-strong)] to-[var(--brand-dark)] text-white">
+                      <Zap className="h-4 w-4" />
                     </div>
-                    <span style={{ fontSize: "14px", color: "#444" }}>{item}</span>
+                    <span className="text-sm font-semibold">SkyPay</span>
                   </div>
-                ))}
-              </div>
-              <button style={{
-                display: "inline-flex", alignItems: "center", gap: "8px",
-                padding: "14px 24px", borderRadius: "100px",
-                background: "#0f0f0f", color: "#fff",
-                border: "none", fontSize: "14px", fontWeight: "600", cursor: "pointer",
-                transition: "opacity 0.2s",
-              }}>
-                Connect Your Notion
-                <ArrowRight size={15} />
-              </button>
-            </div>
-
-              <div className="landing-notion-table-wrap" style={{
-              background: "rgba(248,249,252,0.8)",
-              borderRadius: "20px",
-              padding: "6px",
-              border: "1px solid rgba(0,0,0,0.06)",
-            }}>
-              <div style={{
-                background: "#fff",
-                borderRadius: "16px",
-                overflow: "hidden",
-                border: "1px solid rgba(0,0,0,0.05)",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
-              }}>
-                <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Database size={16} color="#555" />
-                  <span style={{ fontWeight: "600", fontSize: "14px" }}>Client Invoices Database</span>
+                  <Lock className="h-5 w-5 text-[var(--muted-light)]" />
                 </div>
-                <div style={{ padding: "20px" }}>
-                  <div className="landing-table-grid landing-table-head" style={{
-                    display: "grid", gridTemplateColumns: "1fr 80px 80px 110px",
-                    gap: "12px", fontSize: "11px", fontWeight: "600",
-                    color: "#999", textTransform: "uppercase", letterSpacing: "0.05em",
-                    paddingBottom: "12px", borderBottom: "1px solid rgba(0,0,0,0.06)",
-                    marginBottom: "12px",
-                  }}>
-                    <div>Client</div>
-                    <div>Amount</div>
-                    <div>Status</div>
-                    <div className="landing-table-action">Action</div>
+
+                <div className="mb-8 font-mono text-xl tracking-[0.25em] text-[var(--on-dark)]">•••• •••• •••• 4289</div>
+
+                <div className="flex items-end justify-between gap-6">
+                  <div>
+                    <div className="mb-1 text-[10px] uppercase tracking-[0.3em] text-[var(--muted-3)]">Card Holder</div>
+                    <div className="text-sm font-medium">Alex Morgan</div>
                   </div>
-                  {[
-                    { client: "Acme Corp", amount: "0.15 ETH", badge: "Pending", badgeC: "#f59e0b", badgeBg: "rgba(245,158,11,0.1)", action: "Agent: Sent reminder", actionC: "#6366f1" },
-                    { client: "TechStart", amount: "0.25 ETH", badge: "Paid", badgeC: "#22c55e", badgeBg: "rgba(34,197,94,0.1)", action: "Agent: Updated", actionC: "#22c55e" },
-                    { client: "DevCorp", amount: "0.08 ETH", badge: "Scheduled", badgeC: "#3b82f6", badgeBg: "rgba(59,130,246,0.1)", action: "Agent: Sending Jan 15", actionC: "#8b5cf6" },
-                  ].map((row) => (
-                    <div key={row.client} className="landing-table-grid landing-table-row" style={{
-                      display: "grid", gridTemplateColumns: "1fr 80px 80px 110px",
-                      gap: "12px", alignItems: "center",
-                      padding: "10px 0",
-                      borderBottom: "1px solid rgba(0,0,0,0.04)",
-                    }}>
-                      <div className="landing-cell-client" style={{ fontSize: "13px", fontWeight: "500" }}>{row.client}</div>
-                      <div className="landing-cell-amount" style={{ fontSize: "13px", color: "#444" }}>{row.amount}</div>
-                      <div className="landing-cell-status">
-                        <span style={{
-                          padding: "3px 8px", borderRadius: "100px",
-                          fontSize: "11px", fontWeight: "600",
-                          color: row.badgeC, background: row.badgeBg,
-                        }}>{row.badge}</span>
-                      </div>
-                      <div className="landing-table-action" style={{ fontSize: "11px", color: row.actionC, fontWeight: "500" }}>{row.action}</div>
-                    </div>
+                  <div className="text-right">
+                    <div className="mb-1 text-[10px] uppercase tracking-[0.3em] text-[var(--muted-3)]">Expires</div>
+                    <div className="text-sm font-medium">09/28</div>
+                  </div>
+                  <div className="flex gap-1.5">
+                    <div className="h-8 w-8 rounded-full bg-indigo-500/80" />
+                    <div className="-ml-4 h-8 w-8 rounded-full bg-purple-500/80" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute -right-8 top-14 rounded-3xl border border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40 p-4 shadow-[0_18px_40px_rgba(99,102,241,0.05)] backdrop-blur-xl animate-[float_11s_ease-in-out_infinite]">
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--brand)]/10 text-[var(--brand)]">
+                    <Clock3 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-[var(--muted-2)]">Pending</div>
+                    <div className="text-sm font-semibold">Invoice due tomorrow</div>
+                  </div>
+                </div>
+                <div className="text-[11px] text-[var(--muted-3)]">Workflow sync is healthy</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-[var(--muted-2)] lg:flex">
+          <span className="text-xs uppercase tracking-[0.3em]">Scroll</span>
+          <ChevronDown className="h-4 w-4 animate-bounce" />
+        </div>
+      </section>
+
+      <section className="border-y border-black/5 bg-white/45 py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="mb-8 text-center text-xs uppercase tracking-[0.35em] text-[var(--muted-2)]">Trusted by industry leaders</p>
+          <div className="overflow-hidden">
+            <div className="flex w-max items-center gap-14 whitespace-nowrap text-2xl font-semibold text-[var(--muted-2)] animate-[marquee_28s_linear_infinite]">
+                {trustedLogos.concat(trustedLogos).map((logo, index) => (
+                <span key={`${logo}-${index}`} className="flex items-center gap-3">
+                  <Sparkles className="h-6 w-6 text-[var(--brand)]" />
+                  {logo}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-16 max-w-3xl text-center opacity-0 transition-all duration-700">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/10 bg-white/70 px-4 py-2 text-sm text-[var(--muted-2)]">
+              <Sparkles className="h-4 w-4 text-[var(--brand)]" />
+              Powerful Features
+            </div>
+            <h2 className="font-cormorant text-4xl font-semibold tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+              Everything you need to <span className="italic text-[var(--brand)]">scale globally</span>
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--muted-foreground)]">Built for modern businesses that need speed, security, and clarity in every transaction.</p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => {
+              const Icon = feature.icon
+              return (
+                <div key={feature.title} data-reveal className="rounded-4xl border border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40 p-8 shadow-[0_18px_50px_rgba(99,102,241,0.04)] backdrop-blur-xl opacity-0 transition-all duration-700 hover:-translate-y-2">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[color:var(--brand)]/15 bg-linear-to-br from-[var(--brand-strong)]/10 to-[var(--brand-light)]/10 text-[var(--brand)]">
+                    <Icon className="h-7 w-7" />
+                  </div>
+                  <h3 className="mb-3 text-xl font-semibold">{feature.title}</h3>
+                  <p className="leading-7 text-[var(--muted-foreground)]">{feature.description}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="relative py-24 lg:py-32">
+        <div className="absolute inset-x-0 h-128 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.10),transparent_56%)]" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-16 max-w-3xl text-center opacity-0 transition-all duration-700">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/10 bg-white/70 px-4 py-2 text-sm text-[var(--muted-foreground)]">
+              <Route className="h-4 w-4 text-[var(--brand)]" />
+              Simple Process
+            </div>
+            <h2 className="font-cormorant text-4xl font-semibold tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+              Get started in <span className="italic text-[var(--brand)]">3 easy steps</span>
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--muted-foreground)]">From sign-up to your first payment, everything is designed to feel effortless.</p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
+            {steps.map((step, index) => {
+              const Icon = step.icon
+              return (
+                <div key={step.title} data-reveal className="group relative text-center opacity-0 transition-all duration-700">
+                  <div className="relative z-10 mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-3xl border border-white/60 dark:border-white/10 bg-linear-to-br from-white dark:from-zinc-900 to-slate-100/50 dark:to-slate-950/50 shadow-[0_16px_36px_rgba(15,23,42,0.03)] transition-transform duration-300 group-hover:-translate-y-1">
+                      <span className="text-3xl font-semibold text-[var(--brand)]">0{index + 1}</span>
+                  </div>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--brand)]/10 text-[var(--brand)]">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                    <h3 className="mb-4 text-2xl font-semibold">{step.title}</h3>
+                    <p className="mx-auto max-w-sm leading-7 text-[var(--muted-foreground)]">{step.description}</p>
+                    {index < steps.length - 1 ? <div className="absolute right-[-12%] top-10 hidden h-px w-[24%] bg-linear-to-r from-[var(--brand)]/40 to-transparent md:block" /> : null}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="rounded-4xl border border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40 p-8 shadow-[0_18px_50px_rgba(99,102,241,0.04)] backdrop-blur-xl opacity-0 transition-all duration-700 md:p-12 lg:p-16">
+            <div className="grid grid-cols-2 gap-8 lg:grid-cols-4 lg:gap-12">
+              <div className="text-center">
+                <div className="mb-2 text-4xl font-semibold tracking-tight text-[var(--brand)]" data-count="50">0</div>
+                <div className="text-xs uppercase tracking-[0.25em] text-[var(--muted-3)]">K+ Active Users</div>
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-4xl font-semibold tracking-tight text-[var(--brand)]" data-count="2">0</div>
+                <div className="text-xs uppercase tracking-[0.25em] text-[var(--muted-3)]">B+ Processed</div>
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-4xl font-semibold tracking-tight text-[var(--brand)]" data-count="150">0</div>
+                <div className="text-xs uppercase tracking-[0.25em] text-[var(--muted-3)]">+ Currencies</div>
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-4xl font-semibold tracking-tight text-[var(--brand)]" data-count="99">0</div>
+                <div className="text-xs uppercase tracking-[0.25em] text-[var(--muted-3)]">.9% Uptime</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-16 max-w-3xl text-center opacity-0 transition-all duration-700">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/10 bg-white/70 px-4 py-2 text-sm text-[var(--muted-foreground)]">
+              <CreditCard className="h-4 w-4 text-[var(--brand)]" />
+              Simple Pricing
+            </div>
+            <h2 className="font-cormorant text-4xl font-semibold tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+              Transparent <span className="italic text-[var(--brand)]">pricing</span>, no surprises
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--muted-foreground)]">Only pay for what you use. No hidden fees, no long-term contracts.</p>
+          </div>
+
+          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+            {pricingPlans.map((plan) => (
+                <div key={plan.name} data-reveal className={`relative rounded-4xl border p-8 shadow-[0_18px_50px_rgba(15,23,42,0.03)] backdrop-blur-xl opacity-0 transition-all duration-700 hover:-translate-y-2 ${plan.featured ? "border-slate-300 dark:border-slate-700 bg-linear-to-br from-white dark:from-zinc-900 to-slate-50/50 dark:to-slate-950/50 ring-1 ring-slate-200 dark:ring-slate-800" : "border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40"}`}>
+                {plan.featured ? <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-linear-to-r from-[var(--brand-strong)] to-[var(--brand)] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white font-sans">Most Popular</div> : null}
+                  <div className="mb-4 text-sm uppercase tracking-[0.25em] text-[var(--muted-3)]">{plan.name}</div>
+                <div className="mb-2 flex items-baseline gap-1">
+                  <span className="text-5xl font-semibold tracking-tight">{plan.price}</span>
+                    {plan.price !== "Custom" ? <span className="text-[var(--muted-3)]">/mo</span> : null}
+                </div>
+                  <p className="mb-8 text-[var(--muted-foreground)]">{plan.description}</p>
+                <ul className="mb-10 space-y-4">
+                  {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-3 text-[var(--foreground)]">
+                        <Check className="h-5 w-5 shrink-0 text-[var(--brand)]" />
+                      {feature}
+                    </li>
                   ))}
+                </ul>
+                  <Link href={plan.name === "Enterprise" ? "/auth/login" : ctaHref} className={`block rounded-2xl px-4 py-3.5 text-center font-semibold transition-transform hover:-translate-y-0.5 ${plan.featured ? "bg-linear-to-r from-[var(--primary)] to-indigo-950 text-[var(--primary-foreground)]" : "border border-[color:var(--primary)]/10 dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 text-[var(--foreground)]"}`}>
+                  {plan.name === "Enterprise" ? "Contact Sales" : plan.featured ? "Start Free Trial" : "Get Started"}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials" className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div data-reveal className="mx-auto mb-16 max-w-3xl text-center opacity-0 transition-all duration-700">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/10 bg-white/70 px-4 py-2 text-sm text-[var(--muted-foreground)]">
+              <Star className="h-4 w-4 text-[var(--brand)]" />
+              Loved by Teams
+            </div>
+            <h2 className="font-cormorant text-4xl font-semibold tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+              What our <span className="italic text-[var(--brand)]">customers say</span>
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--muted-foreground)]">Hear from the teams that trust SkyPay for everyday payments.</p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <div key={testimonial.name} data-reveal className="rounded-4xl border border-white/60 dark:border-white/10 bg-white/40 dark:bg-black/40 p-8 shadow-[0_18px_50px_rgba(99,102,241,0.04)] backdrop-blur-xl opacity-0 transition-all duration-700">
+                <div className="mb-6 flex gap-1 text-[var(--brand-light)]">
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                </div>
+                <p className="mb-8 leading-8 text-[var(--muted-foreground)]">{testimonial.quote}</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-[var(--brand-strong)]/20 to-[var(--brand-light)]/20 text-[var(--brand)]">
+                    {testimonial.name.split(" ").map((part) => part[0]).join("")}
+                  </div>
+                  <div>
+                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="text-sm text-[var(--muted-3)]">{testimonial.role}</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing Section - Inspired by Sarvam pricing UI */}
-      <section id="pricing" className="landing-section" style={{
-        padding: "80px 0",
-        position: "relative",
-        overflow: "hidden",
-        background: "linear-gradient(to bottom, hsl(220, 30%, 98%), #fff)",
-      }}>
-        <div style={{
-          position: "absolute", top: "-100px", left: "50%", transform: "translateX(-50%)",
-          width: "600px", height: "350px",
-          background: "radial-gradient(ellipse, rgba(196, 181, 253, 0.2) 0%, transparent 70%)",
-          borderRadius: "50%", filter: "blur(60px)", pointerEvents: "none",
-        }} />
-        <div className="landing-container" style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          {/* Ornament */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
-            <span style={{ fontSize: "16px", letterSpacing: "6px", color: "#ddd" }}>✦ ✦ ✦</span>
-          </div>
-
-          <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <h2 style={{
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-              fontWeight: "700",
-              letterSpacing: "-1px",
-              color: "#0f0f0f",
-              margin: "0 0 16px",
-              lineHeight: 1.2,
-            }}>
-              Simple pricing for your payment agent
-            </h2>
-            <p style={{ fontSize: "16px", color: "#666", margin: 0 }}>
-              Start free, scale as your automated payments grow
-            </p>
-          </div>
-
-          <div className="landing-pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", alignItems: "start" }}>
-            {/* Starter */}
-            <div style={{
-              background: "#fff",
-              borderRadius: "20px",
-              border: "1px solid rgba(0,0,0,0.08)",
-              padding: "32px 28px",
-              boxShadow: "0 2px 20px rgba(0,0,0,0.04)",
-            }}>
-              <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#999", margin: "0 0 12px" }}>STARTER</p>
-              <h3 style={{ fontSize: "36px", fontWeight: "700", color: "#0f0f0f", margin: "0 0 8px", letterSpacing: "-1px" }}>Free</h3>
-              <p style={{ fontSize: "14px", color: "#888", margin: "0 0 28px" }}>Perfect for getting started</p>
-              <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "0 0 24px" }} />
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                {["Up to $1,000/month automated", "Basic AI agent capabilities", "Notion integration", "X402Pay processing"].map((item) => (
-                  <li key={item} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: "#444" }}>
-                    <CheckCircle size={15} color="#22c55e" style={{ flexShrink: 0 }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button style={{
-                width: "100%", padding: "13px", borderRadius: "100px",
-                background: "#f4f4f5", color: "#333",
-                border: "none", fontSize: "14px", fontWeight: "600", cursor: "pointer",
-                transition: "background 0.2s",
-              }}>
-                Start Free Agent
-              </button>
-            </div>
-
-            {/* Pro - Most Popular */}
-            <div style={{
-              background: "#fff",
-              borderRadius: "20px",
-              border: "2px solid #6366f1",
-              padding: "32px 28px",
-              boxShadow: "0 8px 40px rgba(99,102,241,0.15)",
-              position: "relative",
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "-14px", left: "50%", transform: "translateX(-50%)",
-                padding: "4px 16px", borderRadius: "100px",
-                background: "#6366f1", color: "#fff",
-                fontSize: "11px", fontWeight: "700", letterSpacing: "0.05em",
-                textTransform: "uppercase", whiteSpace: "nowrap",
-              }}>MOST POPULAR</div>
-              <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#6366f1", margin: "0 0 12px" }}>PRO AGENT</p>
-              <h3 style={{ fontSize: "36px", fontWeight: "700", color: "#0f0f0f", margin: "0 0 8px", letterSpacing: "-1px" }}>2.9%</h3>
-              <p style={{ fontSize: "14px", color: "#888", margin: "0 0 28px" }}>Per automated transaction</p>
-              <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "0 0 24px" }} />
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                {["Unlimited automated volume", "Advanced agent workflows", "Smart scheduling & follow-ups", "Custom Notion templates", "Priority agent support"].map((item) => (
-                  <li key={item} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: "#444" }}>
-                    <CheckCircle size={15} color="#6366f1" style={{ flexShrink: 0 }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button style={{
-                width: "100%", padding: "13px", borderRadius: "100px",
-                background: "#0f0f0f", color: "#fff",
-                border: "none", fontSize: "14px", fontWeight: "600", cursor: "pointer",
-                transition: "opacity 0.2s",
-              }}>
-                Activate Pro Agent
-              </button>
-            </div>
-
-            {/* Enterprise */}
-            <div style={{
-              background: "#fff",
-              borderRadius: "20px",
-              border: "1px solid rgba(0,0,0,0.08)",
-              padding: "32px 28px",
-              boxShadow: "0 2px 20px rgba(0,0,0,0.04)",
-            }}>
-              <p style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#999", margin: "0 0 12px" }}>ENTERPRISE</p>
-              <h3 style={{ fontSize: "36px", fontWeight: "700", color: "#0f0f0f", margin: "0 0 8px", letterSpacing: "-1px" }}>Custom</h3>
-              <p style={{ fontSize: "14px", color: "#888", margin: "0 0 28px" }}>For large-scale automation</p>
-              <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "0 0 24px" }} />
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                {["Volume-based pricing", "Multi-workspace agents", "Custom agent training", "Dedicated agent manager", "White-label deployment"].map((item) => (
-                  <li key={item} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: "#444" }}>
-                    <CheckCircle size={15} color="#22c55e" style={{ flexShrink: 0 }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button style={{
-                width: "100%", padding: "13px", borderRadius: "100px",
-                background: "#f4f4f5", color: "#333",
-                border: "none", fontSize: "14px", fontWeight: "600", cursor: "pointer",
-              }}>
-                Contact Sales
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section - with gradient similar to footer blob */}
-      <section className="landing-section" style={{
-        padding: "80px 0",
-        position: "relative",
-        overflow: "hidden",
-        background: "#fff",
-      }}>
-        <div style={{
-          position: "absolute", bottom: "-100px", left: "50%", transform: "translateX(-50%)",
-          width: "900px", height: "500px",
-          background: "radial-gradient(ellipse, rgba(251, 146, 60, 0.25) 0%, rgba(196, 181, 253, 0.2) 40%, transparent 70%)",
-          borderRadius: "50%", filter: "blur(80px)", pointerEvents: "none",
-        }} />
-        <div className="landing-container" style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
-          <h2 style={{
-            fontSize: "clamp(28px, 4vw, 52px)",
-            fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-            fontWeight: "700",
-            letterSpacing: "-1.5px",
-            color: "#0f0f0f",
-            margin: "0 0 20px",
-            lineHeight: 1.15,
-          }}>
-            Ready to automate your crypto payments?
-          </h2>
-          <p style={{ fontSize: "17px", color: "#666", marginBottom: "40px", lineHeight: 1.7 }}>
-            Connect your Notion workspace and let SKYPay&apos;s AI agent handle all your payment operations automatically.
-          </p>
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginBottom: "32px" }}>
-            <Link href="/auth/login" style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              padding: "14px 28px", borderRadius: "100px",
-              background: "#0f0f0f", color: "#fff",
-              textDecoration: "none", fontSize: "15px", fontWeight: "600",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-              transition: "transform 0.2s",
-            }}>
-              Start Your Agent Free
-              <ArrowRight size={16} />
-            </Link>
-            <button style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              padding: "14px 28px", borderRadius: "100px",
-              background: "transparent", color: "#333",
-              border: "1px solid rgba(0,0,0,0.12)",
-              fontSize: "15px", fontWeight: "500", cursor: "pointer",
-            }}>
-              Watch Agent Demo
-            </button>
-          </div>
-          <div className="landing-cta-inputs" style={{ display: "flex", gap: "10px", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
-            <input
-              className="landing-email-input"
-              type="email"
-              placeholder="Enter your email for agent updates"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                padding: "12px 20px", borderRadius: "100px",
-                border: "1px solid rgba(0,0,0,0.12)",
-                fontSize: "14px", outline: "none",
-                width: "260px", background: "rgba(255,255,255,0.9)",
-              }}
-            />
-            <button style={{
-              padding: "12px 24px", borderRadius: "100px",
-              background: "#6366f1", color: "#fff",
-              border: "none", fontSize: "14px", fontWeight: "600", cursor: "pointer",
-            }}>
-              Get Agent Updates
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer - Sarvam-inspired with scroll-triggered animated glow */}
-      <footer className="landing-footer" ref={footerRef} style={{
-        position: "relative",
-        overflow: "hidden",
-        background: "hsl(220, 30%, 98%)",
-        paddingTop: "60px",
-      }}>
-        {/* Animated footer glow blob — blooms in on scroll like Sarvam */}
-        <div style={{
-          position: "absolute",
-          bottom: "-120px",
-          left: "50%",
-          transform: `translateX(-50%) scaleY(${footerVisible ? 1 : 0.3})`,
-          width: "1100px",
-          height: "500px",
-          background: "radial-gradient(ellipse at 50% 80%, rgba(251, 146, 60, 0.55) 0%, rgba(196, 181, 253, 0.35) 35%, rgba(147, 197, 253, 0.15) 60%, transparent 75%)",
-          borderRadius: "50%",
-          filter: `blur(${footerVisible ? 55 : 20}px)`,
-          opacity: footerVisible ? 1 : 0,
-          transition: "opacity 1.4s cubic-bezier(0.16,1,0.3,1), transform 1.6s cubic-bezier(0.16,1,0.3,1), filter 1.4s ease",
-          pointerEvents: "none",
-          transformOrigin: "bottom center",
-        }} />
-        {/* Secondary softer bloom layer */}
-        <div style={{
-          position: "absolute",
-          bottom: "-60px",
-          left: "50%",
-          transform: `translateX(-50%) scaleX(${footerVisible ? 1 : 0.4})`,
-          width: "700px",
-          height: "300px",
-          background: "radial-gradient(ellipse at 50% 90%, rgba(251, 146, 60, 0.3) 0%, rgba(196, 181, 253, 0.2) 50%, transparent 75%)",
-          borderRadius: "50%",
-          filter: "blur(80px)",
-          opacity: footerVisible ? 0.8 : 0,
-          transition: "opacity 1.8s cubic-bezier(0.16,1,0.3,1) 0.2s, transform 1.8s cubic-bezier(0.16,1,0.3,1) 0.2s",
-          pointerEvents: "none",
-          transformOrigin: "bottom center",
-        }} />
-
-        <div className="landing-container landing-footer-container" style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: 0, paddingBottom: "60px", position: "relative", zIndex: 1 }}>
-          <div className="landing-footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "48px", marginBottom: "48px" }}>
-            <div className="landing-footer-brand">
-              <h3 style={{ fontSize: "22px", fontWeight: "700", letterSpacing: "-0.5px", color: "#0f0f0f", margin: "0 0 10px" }}>SKYPay</h3>
-              <p style={{ fontSize: "14px", color: "#888", lineHeight: 1.7, maxWidth: "240px", margin: "0 0 20px" }}>
-                Agentic payment infrastructure. Your AI handles all crypto payments automatically.
+      <section className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/20 bg-linear-to-b from-[#1E293B] to-[#0F172A] px-8 py-16 text-center text-white shadow-2xl sm:px-12 lg:px-20 lg:py-20">
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_bottom_center,rgba(99,102,241,0.5),transparent_60%)]" />
+            <div className="relative z-10 mx-auto max-w-3xl flex flex-col items-center">
+              <h2 className="font-cormorant text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl mb-6">
+                Build the Future of Payments <span className="italic font-normal">with SKYPay</span>
+              </h2>
+              <p className="mx-auto max-w-xl text-md leading-8 text-slate-300 mb-8">
+                Join the businesses that trust SKYPay to automate, secure, and settle global payments on Notion.
               </p>
-              <div className="landing-footer-social" style={{ display: "flex", gap: "8px" }}>
-                {[Globe, Users, LinkIcon].map((Icon, i) => (
-                  <button key={i} style={{
-                    width: 36, height: 36, borderRadius: "8px",
-                    background: "rgba(0,0,0,0.04)",
-                    border: "1px solid rgba(0,0,0,0.06)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    cursor: "pointer", transition: "background 0.2s",
-                  }}>
-                    <Icon size={15} color="#666" />
-                  </button>
-                ))}
+              
+              {/* Star ornament flourish */}
+              <div className="mb-8 text-white">
+                <svg className="w-8 h-8 animate-pulse text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18M5.636 5.636l12.728 12.728M5.636 19.364L18.764 6.236" />
+                </svg>
+              </div>
+
+              <Link href={ctaHref} className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-slate-900 px-8 py-3.5 text-sm font-semibold hover:bg-slate-100 transition-colors shadow-lg">
+                {ctaLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="relative border-t border-white/60 dark:border-white/10 bg-white/20 dark:bg-black/30 backdrop-blur-xl py-16 shadow-[0_-12px_40px_rgba(99,102,241,0.03)]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-10 md:grid-cols-3 lg:grid-cols-6">
+            <div className="md:col-span-3 lg:col-span-1">
+              <Link href="/landing#hero" className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--brand-strong)] to-[var(--brand-dark)] text-white">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <span className="text-xl font-semibold">
+                  SKY<span className="font-cormorant italic text-[var(--brand)]">Pay</span>
+                </span>
+              </Link>
+              <p className="max-w-sm text-xs leading-7 text-slate-500">Payments without borders. Built for teams that want global money movement to feel simple.</p>
+              
+              {/* Credentials Badges like Sarvam */}
+              <div className="mt-6 flex gap-2">
+                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-200 bg-white/80 p-2 text-[9px] font-semibold text-slate-500 shadow-sm w-16">
+                  <span>ISO</span>
+                  <span className="text-[8px]">27001</span>
+                </div>
+                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-200 bg-white/80 p-2 text-[9px] font-semibold text-slate-500 shadow-sm w-16">
+                  <span>SOC 2</span>
+                  <span className="text-[8px]">TYPE I</span>
+                </div>
               </div>
             </div>
 
             {[
-              {
-                title: "AGENT FEATURES",
-                links: ["Automated Scheduling", "Smart Follow-ups", "Notion Integration", "X402Pay Processing"],
-              },
-              {
-                title: "DEVELOPERS",
-                links: ["Agent API", "Notion Templates", "Webhooks", "Agent Status"],
-              },
-              {
-                title: "COMPANY",
-                links: ["About SKYPay", "Agent Blog", "Careers", "Contact"],
-              },
-            ].map(({ title, links }) => (
-              <div className="landing-footer-col" key={title}>
-                <h4 style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#bbb", margin: "0 0 16px" }}>{title}</h4>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {links.map((link) => (
-                    <li key={link}>
-                      <a href="#" style={{
-                        fontSize: "14px", color: "#666",
-                        textDecoration: "none", transition: "color 0.2s",
-                      }}
-                        onMouseEnter={(e) => (e.target as HTMLElement).style.color = "#0f0f0f"}
-                        onMouseLeave={(e) => (e.target as HTMLElement).style.color = "#666"}
-                      >{link}</a>
+              { title: "Products", items: ["SKYPay Invoice", "SKYPay Links", "Agent Automation", "Treasury Ops"] },
+              { title: "APIs", items: ["Payment API", "Webhooks API", "Developer Sandbox", "Integrations"] },
+              { title: "Developers", items: ["Documentation", "API Pricing", "System Status", "Changelog"] },
+              { title: "Company", items: ["About SKYPay", "Agent Blog", "Careers", "Contact"] },
+              { title: "Socials", items: ["Twitter", "GitHub", "LinkedIn", "Discord"] },
+            ].map((column) => (
+              <div key={column.title}>
+                <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">{column.title}</h4>
+                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                  {column.items.map((item) => (
+                    <li key={item}>
+                      <a href="#" className="transition-colors hover:text-slate-950 dark:hover:text-white">
+                        {item}
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -1234,303 +633,53 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="landing-footer-bottom" style={{
-            borderTop: "1px solid rgba(0,0,0,0.06)",
-            paddingTop: "24px",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            flexWrap: "wrap", gap: "12px",
-          }}>
-            <p style={{ fontSize: "13px", color: "#aaa", margin: 0 }}>Copyright SKYPay 2025</p>
-            <p style={{ fontSize: "13px", color: "#aaa", margin: 0 }}>All rights reserved. Powered by X402Pay &amp; Notion.</p>
+          <div className="mt-14 flex flex-col gap-4 border-t border-black/5 pt-8 text-sm text-[var(--muted-2)] md:flex-row md:items-center md:justify-between">
+            <p>© 2026 SkyPay. All rights reserved.</p>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              All systems operational
+            </div>
           </div>
         </div>
       </footer>
 
-      <style>{`
-        .landing-shell {
-          width: 100%;
-          overflow-x: clip;
+      <style jsx global>{`
+        html {
+          scroll-behavior: smooth;
         }
 
-        .landing-container {
-          padding-left: 24px;
-          padding-right: 24px;
+        [data-reveal] {
+          transform: translateY(24px);
         }
 
-        .landing-notion-table-wrap {
-          overflow-x: auto;
-          scrollbar-width: thin;
+        [data-reveal].is-visible {
+          opacity: 1 !important;
+          transform: translateY(0);
         }
 
-        .landing-footer {
-          scroll-margin-top: 84px;
+        #navbar[data-scrolled='true'] .mx-auto > .flex {
+          background: rgba(255, 255, 255, 0.75);
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
         }
 
-        .landing-footer-grid > * {
-          min-width: 0;
-        }
-
-        .landing-mobile-menu-toggle {
-          display: none;
-        }
-
-        @media (min-width: 769px) and (max-width: 900px) {
-          .landing-notion-grid {
-            grid-template-columns: 1fr !important;
-            gap: 36px !important;
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0);
           }
-
-          .landing-footer-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 26px !important;
+          50% {
+            transform: translateY(-16px);
           }
         }
 
-        @media (max-width: 768px) {
-          .nav-links-desktop { display: none !important; }
-
-          .landing-mobile-menu-toggle {
-            display: inline-flex !important;
-          }
-
-          .landing-nav-wrap {
-            width: calc(100% - 16px) !important;
-            top: 10px !important;
-          }
-
-          .landing-mobile-menu-panel {
-            width: 100% !important;
-            max-width: none !important;
-          }
-
-          .landing-nav {
-            height: 52px !important;
-            padding: 0 4px 0 12px !important;
-            border-radius: 999px !important;
-          }
-
-          .landing-logo-row {
-            gap: 12px !important;
-            min-width: 0;
-          }
-
-          .landing-auth-actions {
-            gap: 4px !important;
-          }
-
-          .landing-signin-btn {
-            display: none !important;
-          }
-
-          .landing-signin-btn {
-            padding: 6px 10px !important;
-            font-size: 12px !important;
-          }
-
-          .landing-getstarted-btn {
-            padding: 8px 14px !important;
-            font-size: 12px !important;
-          }
-
-          .landing-section {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-          }
-
-          .landing-container {
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-          }
-
-          .landing-hero {
-            padding-top: 94px !important;
-            min-height: auto !important;
-          }
-
-          .landing-hero-title {
-            font-size: clamp(48px, 16vw, 58px) !important;
-            line-height: 1.02 !important;
-          }
-
-          .landing-hero-copy {
-            font-size: 16px !important;
-            margin-bottom: 28px !important;
-          }
-
-          .landing-demo-wrap {
-            margin-top: 34px !important;
-          }
-
-          .landing-demo-shell {
-            border-radius: 16px !important;
-          }
-
-          .landing-demo-grid {
-            grid-template-columns: 1fr !important;
-          }
-
-          .landing-demo-col {
-            padding: 16px !important;
-          }
-
-          .landing-demo-col-left {
-            border-right: none !important;
-            border-bottom: 1px solid rgba(15,23,42,0.06) !important;
-          }
-
-          .landing-demo-metrics {
-            gap: 6px !important;
-          }
-
-          .landing-how-grid,
-          .landing-features-grid,
-          .landing-pricing-grid,
-          .landing-footer-grid {
-            grid-template-columns: 1fr !important;
-            gap: 18px !important;
-          }
-
-          .landing-footer-grid {
-            margin-bottom: 28px !important;
-          }
-
-          .landing-footer {
-            padding-top: 48px !important;
-          }
-
-          .landing-footer-brand {
-            text-align: left;
-          }
-
-          .landing-footer-brand h3 {
-            font-size: 28px !important;
-            margin-bottom: 8px !important;
-          }
-
-          .landing-footer-brand p {
-            max-width: none !important;
-            font-size: 15px !important;
-            color: #707684 !important;
-            line-height: 1.6 !important;
-          }
-
-          .landing-footer-social {
-            justify-content: flex-start;
-          }
-
-          .landing-footer-col h4 {
-            margin-bottom: 10px !important;
-          }
-
-          .landing-footer-bottom {
-            padding-top: 18px !important;
-            gap: 6px !important;
-            align-items: flex-start !important;
-          }
-
-          .landing-footer-bottom p {
-            font-size: 12px !important;
-            line-height: 1.5 !important;
-          }
-
-          .landing-notion-table-wrap {
-            overflow: visible !important;
-          }
-
-          .landing-table-head {
-            display: none !important;
-          }
-
-          .landing-table-row {
-            grid-template-columns: minmax(0, 1fr) auto !important;
-            gap: 8px 10px !important;
-            min-width: 0 !important;
-            padding: 10px 12px !important;
-            margin-bottom: 10px;
-            border: 1px solid rgba(0,0,0,0.06) !important;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.86);
-          }
-
-          .landing-cell-client {
-            font-size: 15px !important;
-            line-height: 1.2 !important;
-          }
-
-          .landing-cell-amount {
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            color: #374151 !important;
-            justify-self: end;
-          }
-
-          .landing-cell-status {
-            grid-column: 1 / -1;
-            justify-self: start;
-          }
-
-          .landing-table-action {
-            display: none !important;
-          }
-
-          .landing-notion-grid {
-            grid-template-columns: 1fr !important;
-            gap: 26px !important;
-          }
-
-          .landing-cta-inputs {
-            flex-direction: column !important;
-            align-items: stretch !important;
-          }
-
-          .landing-email-input,
-          .landing-cta-inputs button {
-            width: 100% !important;
-          }
-        }
-
-        @keyframes footerGlowPulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.75; }
-        }
-
-        @keyframes menuSlideIn {
+        @keyframes marquee {
           from {
-            opacity: 0;
-            transform: translateY(-10px) scale(0.94);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @keyframes menuItemSlideIn {
-          from {
-            opacity: 0;
-            transform: translateX(16px);
-          }
-          to {
-            opacity: 1;
             transform: translateX(0);
           }
-        }
-
-        .landing-mobile-menu-link:focus-visible {
-          outline: 2px solid rgba(40, 78, 226, 0.6);
-          outline-offset: 2px;
-          background: rgba(255,255,255,0.5) !important;
-          box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .landing-mobile-menu-panel,
-          .landing-mobile-menu-link {
-            animation: none !important;
-            transition: none !important;
+          to {
+            transform: translateX(-50%);
           }
         }
       `}</style>
-    </div>
+    </main>
   )
 }

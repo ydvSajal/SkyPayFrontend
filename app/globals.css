@@ -45,71 +45,99 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sarvam AI Style Color Theme */
+  --background: #FAFBFD; /* Pure off-white background */
+  --foreground: #09090B; /* Elegant black text */
+  --card: rgba(255, 255, 255, 0.4); /* Translucent white glass background */
+  --card-foreground: #09090B;
+  --popover: rgba(255, 255, 255, 0.8);
+  --popover-foreground: #09090B;
+  --primary: #09090B; /* Black for buttons and primary CTAs */
+  --primary-foreground: #ffffff;
+  --secondary: #F1F5F9; /* Soft slate gray */
+  --secondary-foreground: #09090B;
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B;
+  --accent: #09090B; /* Elegant black accent */
+  --accent-foreground: #ffffff;
+  --destructive: #EF4444;
+  --border: rgba(226, 232, 240, 0.8); /* Cool border */
+  --input: rgba(248, 250, 252, 0.8);
+  --ring: #E2E8F0;
+  --chart-1: #09090B;
+  --chart-2: #3F3F46;
+  --chart-3: #71717A;
+  --chart-4: #A1A1AA;
+  --chart-5: #E4E4E7;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #09090B;
+  --sidebar-primary: #09090B;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #09090B;
+  --sidebar-border: #F1F5F9;
+  --sidebar-ring: #E2E8F0;
+  
+  /* Brand colors transitioned to elegant black/slate highlights */
+  --brand: #09090B; 
+  --brand-strong: #09090B; 
+  --brand-dark: #000000; 
+  --brand-light: #52525B; 
+  
+  /* Helper surface and text tones in cool slate */
+  --surface-light: #F8FAFC;
+  --on-dark: #F8FAFC;
+  --muted-2: #475569;
+  --muted-3: #64748B;
+  --muted-light: #CBD5E1;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark mode approximated with cool contrast */
+  --background: #09090B;
+  --foreground: #F4F4F5;
+  --card: rgba(24, 24, 27, 0.6);
+  --card-foreground: #F4F4F5;
+  --popover: rgba(24, 24, 27, 0.8);
+  --popover-foreground: #F4F4F5;
+  --primary: #F4F4F5;
+  --primary-foreground: #09090B;
+  --secondary: #27272A;
+  --secondary-foreground: #F4F4F5;
+  --muted: #27272A;
+  --muted-foreground: #A1A1AA;
+  --accent: #F4F4F5;
+  --accent-foreground: #09090B;
+  --destructive: #EF4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.04);
+  --ring: #3F3F46;
+  --chart-1: #F4F4F5;
+  --chart-2: #A1A1AA;
+  --chart-3: #71717A;
+  --chart-4: #3F3F46;
+  --chart-5: #18181B;
+  --sidebar: #18181B;
+  --sidebar-foreground: #F4F4F5;
+  --sidebar-primary: #F4F4F5;
+  --sidebar-primary-foreground: #09090B;
+  --sidebar-accent: #27272A;
+  --sidebar-accent-foreground: #F4F4F5;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #3F3F46;
+
+  /* Brand colors in dark mode (slightly lighter and more luminous for contrast) */
+  --brand: #F4F4F5;
+  --brand-strong: #FFFFFF;
+  --brand-dark: #E4E4E7;
+  --brand-light: #A1A1AA;
+
+  /* Helper surface and text tones in dark mode to maintain contrast */
+  --surface-light: #1E293B;
+  --on-dark: #F8FAFC;
+  --muted-2: #94A3B8; /* Slate-400: readable light gray on dark bg */
+  --muted-3: #64748B; /* Slate-500: secondary text on dark bg */
+  --muted-light: #334155; /* Slate-700: subtle dividers on dark bg */
 }
 
 @layer base {
@@ -117,6 +145,15 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    /* White Gradient Rainbow like Sarvam: peach/orange top-left, lavender/indigo top-right, bottom soft glow */
+    background-image: 
+      radial-gradient(40% 400px at 15% 0%, rgba(249, 115, 22, 0.12), transparent 80%), 
+      radial-gradient(40% 400px at 85% 0%, rgba(99, 102, 240, 0.12), transparent 80%),
+      radial-gradient(50% 380px at 50% 100%, rgba(249, 115, 22, 0.10), rgba(99, 102, 241, 0.08) 50%, transparent 80%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    -webkit-background-clip: padding-box;
+    @apply text-foreground;
   }
 }

@@ -180,11 +180,11 @@ function AuthPageContent() {
 
   if (step === "auth") {
     return (
-      <div className="relative min-h-screen bg-[radial-gradient(circle_at_10%_0%,#ffe9d5_0%,#f7f9ff_45%,#eef4ff_100%)] px-4 py-24 sm:px-6 sm:py-8 lg:px-12 lg:py-10 flex items-center justify-center">
+      <div className="relative min-h-screen bg-[radial-gradient(circle_at_10%_0%,#e9ecff_0%,#f7f9ff_45%,#eef4ff_100%)] px-4 py-24 sm:px-6 sm:py-8 lg:px-12 lg:py-10 flex items-center justify-center">
         {topNav}
         <div className="mx-auto grid w-full max-w-6xl items-stretch gap-6 lg:grid-cols-2">
           <div className="relative hidden overflow-hidden rounded-3xl border border-slate-200/70 bg-white/75 p-10 shadow-xl backdrop-blur md:block">
-            <div className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange-200/60 blur-3xl" />
+            <div className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-purple-200/40 blur-3xl" />
             <div className="absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-sky-200/60 blur-3xl" />
             <div className="relative z-10">
               <p className="mb-4 inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
@@ -366,7 +366,7 @@ function AuthPageContent() {
 
   if (step === "notion") {
     return (
-      <div className="relative min-h-screen bg-[radial-gradient(circle_at_0%_0%,#e9ecff_0%,#f8faff_40%,#fff4e8_100%)] px-4 py-24 sm:py-8 lg:py-10 flex items-center justify-center">
+      <div className="relative min-h-screen bg-[radial-gradient(circle_at_0%_0%,#e9ecff_0%,#f8faff_40%,#eef2ff_100%)] px-4 py-24 sm:py-8 lg:py-10 flex items-center justify-center">
         {topNav}
         <div className="mx-auto w-full max-w-3xl">
           <Card className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/90 shadow-2xl">
@@ -507,7 +507,7 @@ function AuthPageContent() {
 
 function AuthPageFallback() {
   return (
-    <div className="relative min-h-screen bg-[radial-gradient(circle_at_10%_0%,#ffe9d5_0%,#f7f9ff_45%,#eef4ff_100%)] px-4 py-24 sm:px-6 sm:py-8 lg:px-12 lg:py-10 flex items-center justify-center">
+    <div className="relative min-h-screen bg-[radial-gradient(circle_at_10%_0%,#e9ecff_0%,#f7f9ff_45%,#eef4ff_100%)] px-4 py-24 sm:px-6 sm:py-8 lg:px-12 lg:py-10 flex items-center justify-center">
       <Card className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white/85 shadow-2xl backdrop-blur">
         <CardContent className="p-8 text-center">
           <Loader2 className="mx-auto h-6 w-6 animate-spin text-slate-700" />

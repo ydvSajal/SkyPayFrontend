@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyPay — Payments Without Borders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#dbe4ff',
+                            200: '#bac8ff',
+                            300: '#91a7ff',
+                            400: '#748ffc',
+                            500: '#5c7cfa',
+                            600: '#4c6ef5',
+                            700: '#4263eb',
+                            800: '#3b5bdb',
+                            900: '#364fc7',
+                        },
+                        dark: {
+                            900: '#0a0e1a',
+                            800: '#0f1629',
+                            700: '#151d3a',
+                            600: '#1c2750',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        html { scroll-behavior: smooth; }
+
+        /* Gradient Animations */
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes orb-move {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -50px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(50px, 10px) scale(1.05); }
+        }
+
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-slow { animation: floatSlow 8s ease-in-out infinite; }
+        .animate-float-delay { animation: float 6s ease-in-out infinite 2s; }
+
+        .animate-slide-up {
+            animation: slideUp 0.8s ease forwards;
+            opacity: 0;
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .shimmer-btn {
+            background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.15) 50%, transparent 75%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0e1a; }
+        ::-webkit-scrollbar-thumb { background: #4263eb; border-radius: 3px; }
+
+        /* Card hover effect */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -15px rgba(66, 99, 235, 0.25);
+        }
+
+        /* Glow effect */
+        .glow {
+            box-shadow: 0 0 60px rgba(66, 99, 235, 0.3), 0 0 120px rgba(66, 99, 235, 0.1);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 40px rgba(66, 99, 235, 0.5);
+        }
+
+        /* Orb backgrounds */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: orb-move 20s ease-in-out infinite;
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #748ffc 0%, #4c6ef5 40%, #9775fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Perspective for 3D card */
+        .perspective-container {
+            perspective: 1200px;
+        }
+
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        /* Navbar blur on scroll */
+        .nav-scrolled {
+            background: rgba(10, 14, 26, 0.85) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Feature icon container */
+        .icon-container {
+            background: linear-gradient(135deg, rgba(66, 99, 235, 0.15), rgba(151, 117, 250, 0.15));
+            border: 1px solid rgba(66, 99, 235, 0.2);
+        }
+
+        /* Progress bar animation */
+        .progress-fill {
+            animation: progressGrow 2s ease forwards;
+            transform-origin: left;
+        }
+
+        @keyframes progressGrow {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* Marquee */
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .marquee-track {
+            animation: marquee 30s linear infinite;
+        }
+
+        /* Mobile menu nav links stagger */
+        .mobile-nav-link {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #mobile-menu.opacity-100 .mobile-nav-link {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #mobile-menu.opacity-100 .mobile-nav-link:nth-child(1) { transition-delay: 0.1s; }
+        #mobile-menu.opacity-100 .mobile-nav-link:nth-child(2) { transition-delay: 0.15s; }
+        #mobile-menu.opacity-100 .mobile-nav-link:nth-child(3) { transition-delay: 0.2s; }
+        #mobile-menu.opacity-100 .mobile-nav-link:nth-child(4) { transition-delay: 0.25s; }
+
+        /* Intersection Observer animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+    </style>
+</head>
+<body class="bg-dark-900 text-white overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold">Sky<span class="gradient-text">Pay</span></span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Features</a>
+                    <a href="#how-it-works" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">How It Works</a>
+                    <a href="#pricing" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Pricing</a>
+                    <a href="#testimonials" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Testimonials</a>
+                </div>
+
+                <!-- Desktop CTA -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Sign In</a>
+                    <a href="#" class="relative group px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 text-sm font-semibold overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-brand-500/25">
+                        <span class="relative z-10">Get Started</span>
+                        <div class="shimmer-btn absolute inset-0"></div>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="menu" class="w-6 h-6" id="menu-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Full-screen Overlay) -->
+        <div id="mobile-menu" class="md:hidden fixed inset-0 top-0 left-0 z-[60] bg-dark-900/98 backdrop-blur-xl flex flex-col opacity-0 pointer-events-none transition-all duration-300" style="background: rgba(10, 14, 26, 0.98);">
+            <!-- Close Button -->
+            <div class="flex items-center justify-between h-20 px-4 sm:px-6">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold">Sky<span class="gradient-text">Pay</span></span>
+                </a>
+                <button id="mobile-menu-close" class="p-2 text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="flex-1 flex flex-col justify-center px-8">
+                <div class="space-y-2">
+                    <a href="#features" class="mobile-nav-link block text-3xl font-bold text-gray-300 hover:text-white py-4 border-b border-white/5 transition-all duration-200 hover:pl-2">Features</a>
+                    <a href="#how-it-works" class="mobile-nav-link block text-3xl font-bold text-gray-300 hover:text-white py-4 border-b border-white/5 transition-all duration-200 hover:pl-2">How It Works</a>
+                    <a href="#pricing" class="mobile-nav-link block text-3xl font-bold text-gray-300 hover:text-white py-4 border-b border-white/5 transition-all duration-200 hover:pl-2">Pricing</a>
+                    <a href="#testimonials" class="mobile-nav-link block text-3xl font-bold text-gray-300 hover:text-white py-4 border-b border-white/5 transition-all duration-200 hover:pl-2">Testimonials</a>
+                </div>
+            </div>
+
+            <!-- Bottom CTA -->
+            <div class="px-8 pb-12 space-y-3">
+                <a href="#" class="block w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 text-center font-semibold text-lg">Get Started Free</a>
+                <a href="#" class="block w-full py-4 rounded-xl border border-white/10 text-center text-gray-400 font-semibold hover:text-white hover:border-white/20 transition-all duration-200">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="orb w-[600px] h-[600px] bg-brand-700 -top-40 -left-40" style="animation-delay: 0s;"></div>
+        <div class="orb w-[500px] h-[500px] bg-purple-700 top-1/3 -right-40" style="animation-delay: -7s;"></div>
+        <div class="orb w-[300px] h-[300px] bg-brand-500 bottom-20 left-1/3" style="animation-delay: -14s;"></div>
+
+        <!-- Grid pattern -->
+        <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Left Content -->
+                <div class="text-center lg:text-left">
+                    <!-- Badge -->
+                    <div class="animate-slide-up inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-brand-300 mb-8" style="animation-delay: 0.1s;">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        Trusted by 50,000+ businesses
+                    </div>
+
+                    <!-- Headline -->
+                    <h1 class="animate-slide-up text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight mb-6" style="animation-delay: 0.2s;">
+                        Payments<br>
+                        <span class="gradient-text">Without Borders</span>
+                    </h1>
+
+                    <!-- Subheading -->
+                    <p class="animate-slide-up text-lg sm:text-xl text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0" style="animation-delay: 0.3s;">
+                        Send, receive, and manage payments globally with zero hidden fees. Lightning-fast transactions powered by next-gen infrastructure.
+                    </p>
+
+                    <!-- CTAs -->
+                    <div class="animate-slide-up flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12" style="animation-delay: 0.4s;">
+                        <a href="#" class="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-purple-600 font-semibold text-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-brand-500/30 hover:-translate-y-1">
+                            <span class="relative z-10">Start for Free</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform"></i>
+                            <div class="shimmer-btn absolute inset-0"></div>
+                        </a>
+                        <a href="#" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl glass text-gray-300 font-semibold text-lg hover:text-white hover:bg-white/10 transition-all duration-300">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                            Watch Demo
+                        </a>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="animate-slide-up flex flex-wrap justify-center lg:justify-start gap-8" style="animation-delay: 0.5s;">
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-bold">$2B+</div>
+                            <div class="text-sm text-gray-500">Processed Monthly</div>
+                        </div>
+                        <div class="w-px bg-white/10 hidden sm:block"></div>
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-bold">150+</div>
+                            <div class="text-sm text-gray-500">Currencies</div>
+                        </div>
+                        <div class="w-px bg-white/10 hidden sm:block"></div>
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-bold">99.9%</div>
+                            <div class="text-sm text-gray-500">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: 3D Card Visual -->
+                <div class="perspective-container hidden lg:flex justify-center">
+                    <div class="relative" id="card-container">
+                        <!-- Main Card -->
+                        <div class="card-3d w-[420px] h-[260px] rounded-3xl bg-gradient-to-br from-dark-700 to-dark-800 border border-white/10 p-8 shadow-2xl animate-float-slow">
+                            <!-- Card Header -->
+                            <div class="flex items-center justify-between mb-10">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
+                                        <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+                                    </div>
+                                    <span class="font-bold text-sm">SkyPay</span>
+                                </div>
+                                <i data-lucide="wifi" class="w-5 h-5 text-brand-400 rotate-90"></i>
+                            </div>
+
+                            <!-- Card Number -->
+                            <div class="text-xl tracking-[0.25em] font-mono mb-8 text-gray-200">
+                                •••• •••• •••• 4289
+                            </div>
+
+                            <!-- Card Footer -->
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Card Holder</div>
+                                    <div class="text-sm font-medium">Alex Morgan</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Expires</div>
+                                    <div class="text-sm font-medium">09/28</div>
+                                </div>
+                                <div class="flex gap-1.5">
+                                    <div class="w-8 h-8 rounded-full bg-red-500/80"></div>
+                                    <div class="w-8 h-8 rounded-full bg-yellow-500/80 -ml-4"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Transaction -->
+                        <div class="absolute -right-8 top-16 glass rounded-2xl p-4 animate-float-delay min-w-[180px]">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-400">Received</div>
+                                    <div class="font-semibold text-sm">+$4,250.00</div>
+                                </div>
+                            </div>
+                            <div class="text-[10px] text-gray-500">2 minutes ago</div>
+                        </div>
+
+                        <!-- Floating Balance -->
+                        <div class="absolute -left-12 bottom-4 glass rounded-2xl p-4 animate-float" style="animation-delay: 1s; min-width: 170px;">
+                            <div class="text-xs text-gray-400 mb-1">Total Balance</div>
+                            <div class="text-xl font-bold">$48,290<span class="text-sm text-gray-400">.53</span></div>
+                            <div class="flex items-center gap-1 mt-1">
+                                <i data-lucide="trending-up" class="w-3 h-3 text-green-400"></i>
+                                <span class="text-xs text-green-400">+12.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2 animate-pulse">
+            <span class="text-xs text-gray-500">Scroll</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500"></i>
+        </div>
+    </section>
+
+    <!-- Logos Marquee -->
+    <section class="relative py-16 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <p class="text-center text-sm text-gray-500 uppercase tracking-widest">Trusted by industry leaders</p>
+        </div>
+        <div class="overflow-hidden">
+            <div class="marquee-track flex items-center gap-16 whitespace-nowrap" style="width: max-content;">
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="hexagon" class="w-6 h-6"></i>TechFlow</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="diamond" class="w-6 h-6"></i>NovaPay</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="triangle" class="w-6 h-6"></i>Quantum</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="octagon" class="w-6 h-6"></i>Orbitex</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="pentagon" class="w-6 h-6"></i>NeoBank</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="circle" class="w-6 h-6"></i>Fusion</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="square" class="w-6 h-6"></i>Helix</span>
+                <!-- Duplicate for seamless loop -->
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="hexagon" class="w-6 h-6"></i>TechFlow</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="diamond" class="w-6 h-6"></i>NovaPay</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="triangle" class="w-6 h-6"></i>Quantum</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="octagon" class="w-6 h-6"></i>Orbitex</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="pentagon" class="w-6 h-6"></i>NeoBank</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="circle" class="w-6 h-6"></i>Fusion</span>
+                <span class="text-2xl font-bold text-gray-600 flex items-center gap-3"><i data-lucide="square" class="w-6 h-6"></i>Helix</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-brand-300 mb-6">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Powerful Features
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+                    Everything you need to <span class="gradient-text">scale globally</span>
+                </h2>
+                <p class="text-lg text-gray-400">Built for modern businesses that demand speed, security, and simplicity in every transaction.</p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="reveal reveal-delay-1 card-hover group glass rounded-3xl p-8">
+                    <div class="icon-container w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="globe" class="w-7 h-7 text-brand-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Global Payments</h3>
+                    <p class="text-gray-400 leading-relaxed">Accept payments from customers in 150+ countries with automatic currency conversion and local payment methods.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="reveal reveal-delay-2 card-hover group glass rounded-3xl p-8">
+                    <div class="icon-container w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-brand-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Bank-Grade Security</h3>
+                    <p class="text-gray-400 leading-relaxed">256-bit encryption, PCI DSS Level 1 compliant, and advanced fraud detection to keep every transaction safe.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="reveal reveal-delay-3 card-hover group glass rounded-3xl p-8">
+                    <div class="icon-container w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="zap" class="w-7 h-7 text-brand-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Instant Transfers</h3>
+                    <p class="text-gray-400 leading-relaxed">Send and receive money in seconds, not days. Real-time processing across all supported currencies.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="reveal reveal-delay-1 card-hover group glass rounded-3xl p-8">
+                    <div class="icon-container w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="code-2" class="w-7 h-7 text-brand-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Developer-First API</h3>
+                    <p class="text-gray-400 leading-relaxed">RESTful API with SDKs for every major language. Integrate in hours, not weeks, with our comprehensive docs.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="reveal reveal-delay-2 card-hover group glass rounded-3xl p-8">
+                    <div class="icon-container w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="bar-chart-3" class="w-7 h-7 text-brand-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Smart Analytics</h3>
+                    <p class="text-gray-400 leading-relaxed">Real-time dashboards, custom reports, and AI-powered insights to optimize your payment performance.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="reveal reveal-delay-3 card-hover group glass rounded-3xl p-8">
+                    <div class="icon-container w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="repeat" class="w-7 h-7 text-brand-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Recurring Billing</h3>
+                    <p class="text-gray-400 leading-relaxed">Automate subscriptions, invoicing, and payment retries. Reduce churn with smart dunning management.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="relative py-24 lg:py-32">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-900/20 to-transparent"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-brand-300 mb-6">
+                    <i data-lucide="route" class="w-4 h-4"></i>
+                    Simple Process
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+                    Get started in <span class="gradient-text">3 easy steps</span>
+                </h2>
+                <p class="text-lg text-gray-400">From sign-up to your first payment, everything is designed to be effortless.</p>
+            </div>
+
+            <!-- Steps -->
+            <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
+                <!-- Step 1 -->
+                <div class="reveal reveal-delay-1 relative text-center group">
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-brand-600/20 to-purple-600/20 border border-brand-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl font-black gradient-text">1</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Create Account</h3>
+                        <p class="text-gray-400 leading-relaxed max-w-sm mx-auto">Sign up in 60 seconds. Verify your identity with our streamlined KYC process and you're ready to go.</p>
+                    </div>
+                    <!-- Connector line (hidden on mobile) -->
+                    <div class="hidden md:block absolute top-10 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-500/50 to-transparent"></div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="reveal reveal-delay-2 relative text-center group">
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-brand-600/20 to-purple-600/20 border border-brand-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl font-black gradient-text">2</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Connect & Configure</h3>
+                        <p class="text-gray-400 leading-relaxed max-w-sm mx-auto">Link your bank accounts, set up payment methods, and customize your dashboard to fit your workflow.</p>
+                    </div>
+                    <div class="hidden md:block absolute top-10 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-500/50 to-transparent"></div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="reveal reveal-delay-3 text-center group">
+                    <div class="w-20 h-20 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-brand-600/20 to-purple-600/20 border border-brand-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-3xl font-black gradient-text">3</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Start Transacting</h3>
+                    <p class="text-gray-400 leading-relaxed max-w-sm mx-auto">Send and receive payments instantly. Monitor everything from a single, powerful dashboard in real time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="relative py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="reveal glass rounded-3xl p-8 md:p-12 lg:p-16">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                    <div class="text-center">
+                        <div class="text-4xl lg:text-5xl font-black gradient-text mb-2" data-count="50">0</div>
+                        <div class="text-sm text-gray-400 uppercase tracking-wider">K+ Active Users</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl lg:text-5xl font-black gradient-text mb-2" data-count="2">0</div>
+                        <div class="text-sm text-gray-400 uppercase tracking-wider">B+ Processed</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl lg:text-5xl font-black gradient-text mb-2" data-count="150">0</div>
+                        <div class="text-sm text-gray-400 uppercase tracking-wider">+ Currencies</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl lg:text-5xl font-black gradient-text mb-2" data-count="99">0</div>
+                        <div class="text-sm text-gray-400 uppercase tracking-wider">.9% Uptime</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-brand-300 mb-6">
+                    <i data-lucide="tag" class="w-4 h-4"></i>
+                    Simple Pricing
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+                    Transparent <span class="gradient-text">pricing</span>, no surprises
+                </h2>
+                <p class="text-lg text-gray-400">Only pay for what you use. No hidden fees, no long-term contracts.</p>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter -->
+                <div class="reveal reveal-delay-1 card-hover glass rounded-3xl p-8">
+                    <div class="text-sm text-gray-400 uppercase tracking-wider mb-4">Starter</div>
+                    <div class="flex items-baseline gap-1 mb-2">
+                        <span class="text-5xl font-black">$0</span>
+                        <span class="text-gray-500">/mo</span>
+                    </div>
+                    <p class="text-gray-400 mb-8">Perfect for testing and small projects</p>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Up to 100 transactions/mo</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>5 payment methods</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Basic analytics</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Email support</li>
+                    </ul>
+                    <a href="#" class="block w-full py-3.5 rounded-xl border border-white/10 text-center font-semibold hover:bg-white/5 hover:border-white/20 transition-all duration-300">Get Started</a>
+                </div>
+
+                <!-- Pro (Popular) -->
+                <div class="reveal reveal-delay-2 card-hover relative glass rounded-3xl p-8 border-brand-500/30 ring-1 ring-brand-500/20">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-brand-600 to-purple-600 text-xs font-bold uppercase tracking-wider">Most Popular</div>
+                    <div class="text-sm text-brand-400 uppercase tracking-wider mb-4">Pro</div>
+                    <div class="flex items-baseline gap-1 mb-2">
+                        <span class="text-5xl font-black">$49</span>
+                        <span class="text-gray-500">/mo</span>
+                    </div>
+                    <p class="text-gray-400 mb-8">For growing businesses that need more</p>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Unlimited transactions</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>All payment methods</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Advanced analytics</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Priority support</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Custom branding</li>
+                    </ul>
+                    <a href="#" class="block w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 text-center font-semibold hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300">Start Free Trial</a>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="reveal reveal-delay-3 card-hover glass rounded-3xl p-8">
+                    <div class="text-sm text-gray-400 uppercase tracking-wider mb-4">Enterprise</div>
+                    <div class="flex items-baseline gap-1 mb-2">
+                        <span class="text-5xl font-black">Custom</span>
+                    </div>
+                    <p class="text-gray-400 mb-8">For large organizations with custom needs</p>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Volume discounts</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Dedicated account manager</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>Custom integrations</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>SLA guarantees</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i data-lucide="check" class="w-5 h-5 text-brand-400 flex-shrink-0"></i>24/7 phone support</li>
+                    </ul>
+                    <a href="#" class="block w-full py-3.5 rounded-xl border border-white/10 text-center font-semibold hover:bg-white/5 hover:border-white/20 transition-all duration-300">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="relative py-24 lg:py-32">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-900/20 to-transparent"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-brand-300 mb-6">
+                    <i data-lucide="heart" class="w-4 h-4"></i>
+                    Loved by Teams
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+                    What our <span class="gradient-text">customers say</span>
+                </h2>
+                <p class="text-lg text-gray-400">Don't just take our word for it. Hear from the teams that trust SkyPay.</p>
+            </div>
+
+            <!-- Testimonials Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Testimonial 1 -->
+                <div class="reveal reveal-delay-1 card-hover glass rounded-3xl p-8">
+                    <div class="flex items-center gap-1 mb-6">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed mb-8">"SkyPay transformed our international payments. What used to take 3-5 business days now happens instantly. Our cash flow has never been better."</p>
+                    <div class="flex items-center gap-4">
+                        <img src="http://static.photos/people/200x200/1" alt="Sarah Chen" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-semibold">Sarah Chen</div>
+                            <div class="text-sm text-gray-500">CFO, TechFlow Inc</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="reveal reveal-delay-2 card-hover glass rounded-3xl p-8">
+                    <div class="flex items-center gap-1 mb-6">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed mb-8">"The API documentation is phenomenal. We had SkyPay integrated into our platform in just one afternoon. The developer experience is unmatched."</p>
+                    <div class="flex items-center gap-4">
+                        <img src="http://static.photos/people/200x200/2" alt="Marcus Rivera" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-semibold">Marcus Rivera</div>
+                            <div class="text-sm text-gray-500">CTO, Quantum SaaS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="reveal reveal-delay-3 card-hover glass rounded-3xl p-8">
+                    <div class="flex items-center gap-1 mb-6">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed mb-8">"Switching from our old processor to SkyPay saved us $15K/month in fees alone. The transparent pricing means no more surprise charges."</p>
+                    <div class="flex items-center gap-4">
+                        <img src="http://static.photos/people/200x200/3" alt="Emily Watson" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-semibold">Emily Watson</div>
+                            <div class="text-sm text-gray-500">VP Finance, Orbitex</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="reveal relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand-700 via-brand-600 to-purple-700 p-12 md:p-20 text-center">
+                <!-- Decorative orbs -->
+                <div class="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10">
+                    <h2 class="text-3xl sm:text-4xl lg:text-6xl font-black mb-6 leading-tight">
+                        Ready to go<br>borderless?
+                    </h2>
+                    <p class="text-lg sm:text-xl text-brand-100/80 mb-10 max-w-2xl mx-auto">
+                        Join 50,000+ businesses that trust SkyPay for seamless, global payments. Start your free trial today.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="#" class="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white text-brand-700 font-bold text-lg hover:bg-gray-100 hover:shadow-2xl hover:shadow-black/20 transition-all duration-300 hover:-translate-y-1">
+                            Get Started Free
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        <a href="#" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl border-2 border-white/30 text-white font-bold text-lg hover:bg-white/10 transition-all duration-300">
+                            <i data-lucide="calendar" class="w-5 h-5"></i>
+                            Book a Demo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative border-t border-white/5 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
+                <!-- Brand -->
+                <div class="col-span-2 lg:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
+                            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">Sky<span class="gradient-text">Pay</span></span>
+                    </a>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Payments without borders. Built for the modern global economy.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i data-lucide="twitter" class="w-4 h-4 text-gray-400"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i data-lucide="github" class="w-4 h-4 text-gray-400"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i data-lucide="linkedin" class="w-4 h-4 text-gray-400"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Product -->
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Product</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">API Docs</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Company</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Resources</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Status</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Security</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Partners</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Legal</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Privacy</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Terms</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Cookies</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-gray-600">© 2024 SkyPay. All rights reserved.</p>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        All systems operational
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- Main Script -->
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        let menuOpen = false;
+
+        function openMobileMenu() {
+            menuOpen = true;
+            mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+            mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeMobileMenu() {
+            menuOpen = false;
+            mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+            mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+
+        // Close mobile menu on link click
+        mobileMenu.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && menuOpen) {
+                closeMobileMenu();
+            }
+        });
+
+        // Intersection Observer for reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Counter animation
+        const countObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('[data-count]');
+                    counters.forEach(counter => {
+                        const target = parseInt(counter.getAttribute('data-count'));
+                        const duration = 2000;
+                        const start = performance.now();
+
+                        function updateCounter(currentTime) {
+                            const elapsed = currentTime - start;
+                            const progress = Math.min(elapsed / duration, 1);
+                            // Ease out cubic
+                            const eased = 1 - Math.pow(1 - progress, 3);
+                            counter.textContent = Math.round(target * eased);
+                            if (progress < 1) {
+                                requestAnimationFrame(updateCounter);
+                            }
+                        }
+                        requestAnimationFrame(updateCounter);
+                    });
+                    countObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsSection = document.querySelector('[data-count]');
+        if (statsSection) {
+            countObserver.observe(statsSection.closest('.reveal') || statsSection.closest('.glass'));
+        }
+
+        // 3D card effect
+        const cardContainer = document.getElementById('card-container');
+        if (cardContainer) {
+            const card3d = cardContainer.querySelector('.card-3d');
+            
+            cardContainer.addEventListener('mousemove', (e) => {
+                const rect = cardContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                
+                card3d.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            cardContainer.addEventListener('mouseleave', () => {
+                card3d.style.transform = 'rotateX(0) rotateY(0)';
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+<script src="https://deepsite.hf.co/deepsite-badge.js"></script>
+</body>
+</html>

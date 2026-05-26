@@ -262,7 +262,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_12%_0%,#ffe8d6_0%,#f6f8ff_35%,#eef4ff_100%)] p-3 sm:p-4">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_12%_0%,#e9ecff_0%,#f6f8ff_35%,#eef4ff_100%)] p-3 sm:p-4">
       <div className="mx-auto grid min-h-[calc(100vh-1.5rem)] w-full max-w-[1500px] gap-4 lg:grid-cols-[360px_1fr]">
         <aside className="flex min-h-[420px] flex-col overflow-hidden rounded-3xl border border-slate-200/70 bg-white/85 shadow-xl backdrop-blur">
           <div className="border-b border-slate-100 p-5">
